@@ -26,11 +26,12 @@
 @end
 
 // A nice loading bar. Credits: classdump-dyld
-static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, NSString *details, int width, const char *fileName) {
+static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, int width, const char *fileName) {
     // Calculuate the ratio of complete-to-incomplete.
     float ratio = currentValue/(float)totalValue;
     int   elapsed     = ratio * width;
     NSString *rem = @"";
+    NSString *det = @"";
     // Show the percentage complete.
     printf("%3d%% [", (int)(ratio*100));
     
@@ -43,11 +44,12 @@ static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remai
     
     if (remaining != 0) {
         rem = [[NSString stringWithFormat:@"%lu",remaining] TIMEFormat];
+        det = BYTE_PROGRESS(currentValue, totalValue);
     }
     
     // ANSI Control codes to go back to the
     // previous line and clear it.
-    printf("] %s %s <%s> \n\033[F\033[J",[rem UTF8String], [details UTF8String], fileName);
+    printf("] %s %s <%s> \n\033[F\033[J",[rem UTF8String], [det UTF8String], fileName);
 }
 
 int main(int argc, const char * argv[]) {
@@ -58,9 +60,9 @@ int main(int argc, const char * argv[]) {
             toPath = [fromPath lastPathComponent];
         }
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithFromPath:fromPath toPath:toPath];
-        copyOperation.progressBlock = ^(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime, NSString *details) {
+        copyOperation.progressBlock = ^(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
-            loadBar(elapsedValue, totalSize, remainingTime, details, 50, [[toPath lastPathComponent] UTF8String]);
+            loadBar(elapsedValue, totalSize, remainingTime, 50, [[toPath lastPathComponent] UTF8String]);
         };
         copyOperation.stateChanged = ^(RSTLCopyState state, NSInteger resultCode) {
             //NSLog(@"state changed: %hhd code: %lu", state, resultCode);

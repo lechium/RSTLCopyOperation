@@ -38,6 +38,10 @@
 // and personally I think that any API with that in the header
 // I wouldn't use in any real software.
 
+#define FANCY_BYTES(B) [NSByteCountFormatter stringFromByteCount:B countStyle:NSByteCountFormatterCountStyleFile]
+#define BYTE_PROGRESS(E,T) [NSString stringWithFormat:@"[%@/%@]",FANCY_BYTES(E), FANCY_BYTES(T)]
+
+
 typedef NS_ENUM(int8_t, RSTLCopyState) {
     RSTLCopyNotStarted,
     RSTLCopyInProgress,
@@ -51,7 +55,7 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 
 @property (copy, nonatomic, readonly) NSString *fromPath;
 @property (copy, nonatomic, readonly) NSString *toPath;
-@property (nonatomic, copy) void (^progressBlock)(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime, NSString *details);
+@property (nonatomic, copy) void (^progressBlock)(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime);
 @property (nonatomic, copy) void (^stageChanged)(NSInteger stage, NSInteger what);
 @property (nonatomic, copy) void (^stateChanged)(RSTLCopyState state, NSInteger resultCode);
 

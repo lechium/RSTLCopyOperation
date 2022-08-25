@@ -20,8 +20,6 @@
 #define ALog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__])
 #define DLog(format, ...) ALog(@"[Copy] %@", [NSString stringWithFormat:format, ## __VA_ARGS__])
 #define LOG_SELF        ALog(@"[Copy] %@ %@", self, NSStringFromSelector(_cmd))
-#define FANCY_BYTES(B) [NSByteCountFormatter stringFromByteCount:B countStyle:NSByteCountFormatterCountStyleFile]
-#define BYTE_PROGRESS(E,T) [NSString stringWithFormat:@"[%@/%@]",FANCY_BYTES(E), FANCY_BYTES(T)]
 
 
 #import "RSTLCopyOperation.h"
@@ -175,10 +173,8 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                             remainingTime = (self.currentFileSize - copiedBytes)/speed;
                             //fprintf(stdout, "remaining time: %f\n", remainingTime);
                         }
-                        NSString *byteProgress = BYTE_PROGRESS(copiedBytes, self.currentFileSize);
-                        //DLog(@"byteProgress: %@", byteProgress);
                         if (self.progressBlock) {
-                            self.progressBlock(copiedBytes, self.currentFileSize, remainingTime, byteProgress);
+                            self.progressBlock(copiedBytes, self.currentFileSize, remainingTime);
                         } else {
                             NSLog(@"Copied %@ of %s so far", [NSByteCountFormatter stringFromByteCount:copiedBytes countStyle:NSByteCountFormatterCountStyleFile], fromPath);
                         }
