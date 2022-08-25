@@ -91,12 +91,12 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                         off_t toSize = fsize(toPath);
                         off_t fromSize = fsize(fromPath);
                         if (toSize < fromSize) {
-                            VerboseLog(@"Incomplete file size %lld vs %lld\n", toSize, fromSize);
+                            VerboseLog(@"Incomplete file size %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
                             remove(toPath);
                         }
                     }
                     self.progress.processingFile = [NSString stringWithUTF8String:toPath];
-                    VerboseLog(@"File Start %s size: %lu\n", fromPath, self.currentFileSize);
+                    VerboseLog(@"File Start %s size: %@\n", fromPath, FANCY_BYTES(self.currentFileSize));
                     
                     break;
                 case COPYFILE_FINISH:
@@ -110,7 +110,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         case COPYFILE_RECURSE_DIR:
             switch (stage) {
                 case COPYFILE_START:
-                    VerboseLog(@"Dir Start: %s size: %lu", toPath, (unsigned long)fsize(fromPath));
+                    VerboseLog(@"Dir Start: %s size: %@", toPath, FANCY_BYTES(fsize(fromPath)));
                     break;
                 case COPYFILE_FINISH:
                     VerboseLog(@"Dir Finish: %s", toPath);
@@ -203,12 +203,15 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         DLog(@"File exists: %@", _toPath);
         off_t toSize = fsize([_toPath UTF8String]);
         off_t fromSize = fsize([_fromPath UTF8String]);
-        VerboseLog(@"Compare sizes %lld vs %lld\n", toSize, fromSize);
+        VerboseLog(@"Compare sizes %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
     }
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    VerboseLog(@"copying %s to %s...", fromPath, toPath);
+    VerboseLog(@"Copying %s to %s...", fromPath, toPath);
+    if (is_dir(fromPath)) {
+        VerboseLog(@"%s size: %@", fromPath, FANCY_BYTES(fsize(fromPath)));
+    }
     self.state = RSTLCopyInProgress;
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CB, &RSTLCopyFileCallback);
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CTX, (__bridge void *)self);
