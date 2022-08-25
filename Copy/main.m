@@ -7,6 +7,33 @@
 
 #import <Foundation/Foundation.h>
 #import "RSTLCopyOperation.h"
+#ifdef __APPLE__
+#include <sys/syslimits.h>
+#endif
+
+#include <stdio.h>
+#include <errno.h>
+#include <libgen.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <getopt.h>
+
+#define OPTION_FLAGS "fnRvq"
+char *progname;
+char *dname;
+bool quiet;
+
+static struct option longopts[] = {
+
+    { "force",                      no_argument, NULL,   'f' },
+    { "no-overwrite",               no_argument, NULL,   'n' },
+    { "recursive",                  no_argument, NULL,   'R' },
+    { "verbose",                    no_argument, NULL,   'v' },
+    { "quiet",                      no_argument, NULL,   'q' },
+    { NULL,                         0, NULL,   0 }
+};
+
 
 @interface NSString (extras)
 - (NSString *)TIMEFormat;
@@ -28,6 +55,7 @@
 // A nice loading bar. Credits: classdump-dyld
 static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, int width, const char *fileName) {
     // Calculuate the ratio of complete-to-incomplete.
+    if (quiet) return;
     float ratio = currentValue/(float)totalValue;
     int   elapsed     = ratio * width;
     NSString *rem = @"";
@@ -52,14 +80,58 @@ static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remai
     printf("] %s %s <%s> \n\033[F\033[J",[rem UTF8String], [det UTF8String], fileName);
 }
 
-int main(int argc, const char * argv[]) {
-    if (argc >= 3){
-        NSString *fromPath = [NSString stringWithUTF8String:argv[1]];
-        NSString *toPath = [NSString stringWithUTF8String:argv[2]];
+int main(int argc, char * argv[]) {
+    BOOL verbose = false;
+    BOOL recursive = false;
+    BOOL force = false;
+    BOOL dontOverwrite = false;
+    int flag;
+    NSString *myOpts = @"";
+    while ((flag = getopt_long(argc, argv, OPTION_FLAGS, longopts, NULL)) != -1) {
+        switch(flag) {
+            case 'f':
+                force = true;
+                dontOverwrite = false;
+                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"n" withString:@""];
+                myOpts = [myOpts stringByAppendingString:@"f"];
+                break;
+            case 'R':
+                recursive = true;
+                myOpts = [myOpts stringByAppendingString:@"R"];
+                break;
+            case 'v':
+                verbose = true;
+                quiet = false;
+                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"q" withString:@""];
+                myOpts = [myOpts stringByAppendingString:@"v"];
+                break;
+            case 'n':
+                dontOverwrite = true;
+                force = false;
+                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"f" withString:@""];
+                myOpts = [myOpts stringByAppendingString:@"n"];
+                break;
+            case 'q':
+                quiet = true;
+                verbose = false;
+                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"v" withString:@""];
+                myOpts = [myOpts stringByAppendingString:@"q"];
+                break;
+        }
+    }
+    argc -= optind;
+    argv += optind;
+    if (argc == 2){
+        NSString *fromPath = [NSString stringWithUTF8String:argv[0]];
+        NSString *toPath = [NSString stringWithUTF8String:argv[1]];
         if ([toPath isEqualToString:@"."]) {
             toPath = [fromPath lastPathComponent];
         }
-        RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithFromPath:fromPath toPath:toPath];
+        RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithInputFile:fromPath toPath:toPath];
+        copyOperation.force = force;
+        copyOperation.recursive = recursive;
+        copyOperation.verbose = verbose;
+        copyOperation.dontOverwrite = dontOverwrite;
         copyOperation.progressBlock = ^(KBProgress *progress) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
             loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, 50, [[toPath lastPathComponent] UTF8String]);
@@ -87,7 +159,7 @@ int main(int argc, const char * argv[]) {
         [queue addOperation:copyOperation];
         if (![copyOperation isExecuting]){
             //NSLog(@"is NOT executing... kickstart!");
-            [copyOperation main];
+            //[copyOperation main];
         }
         [queue waitUntilAllOperationsAreFinished];
         return copyOperation.resultCode;

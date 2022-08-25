@@ -25,6 +25,16 @@
 #include "copyfile.h"
 #include <sys/stat.h>
 
+bool fileExists(const char* file) {
+    struct stat buf;
+    return (stat(file, &buf) == 0);
+}
+
+bool is_dir(char *path) {
+    struct stat s;
+    return (stat(path, &s) == 0 && s.st_mode & S_IFDIR);
+}
+
 off_t fsize(const char *filename) {
     struct stat st;
     if (stat(filename, &st) == 0) {
@@ -48,38 +58,7 @@ off_t fsize(const char *filename) {
 
 @implementation RSTLCopyOperation
 
-- (RSTLCopyState)state {
-    return _state;
-}
-
-- (void)setState:(RSTLCopyState)state {
-    _state = state;
-    if (self.stateChanged) {
-        self.stateChanged(state, self.resultCode);
-    }
-}
-
-- (BOOL)isFinished {
-    return _finished;
-}
-
-- (BOOL)isExecuting {
-    return _executing;
-}
-
-- (void)setExecuting:(BOOL)executing {
-    [self willChangeValueForKey:@"isExecuting"];
-    _executing = executing;
-    [self didChangeValueForKey:@"isExecuting"];
-}
-
-- (void)setFinished:(BOOL)finished {
-    [self willChangeValueForKey:@"isFinished"];
-    _finished = finished;
-    [self didChangeValueForKey:@"isFinished"];
-}
-
-- (instancetype)initWithFromPath:(NSString *)fromPath toPath:(NSString *)toPath {
+- (instancetype)initWithInputFile:(NSString *)fromPath toPath:(NSString *)toPath {
     self = [super init];
     if (self) {
         _fromPath = [fromPath copy];
@@ -206,9 +185,27 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     [self setFinished:false];
     copyfile_state_t copyfileState = copyfile_state_alloc();
     
+    if (fileExists([_toPath UTF8String])) {
+        DLog(@"File already exists!!");
+        if (self.force) {
+            if (_verbose){
+                DLog(@"'f'orcing, remove file!!");
+            }
+            remove([_toPath UTF8String]);
+        } else {
+            self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
+            copyfile_state_free(copyfileState);
+            [self setExecuting:false];
+            [self setFinished:true];
+            return;
+        }
+    }
+    
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    
+    if (_verbose){
+        DLog(@"copying %s to %s...", fromPath, toPath);
+    }
     self.state = RSTLCopyInProgress;
     
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CB, &RSTLCopyFileCallback);
@@ -219,11 +216,41 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
     
     copyfile_state_free(copyfileState);
-
+    
     [self setExecuting:false];
     [self setFinished:true];
-    DLog(@"isFinished: %d", self.isFinished);
-    
 }
+
+- (RSTLCopyState)state {
+    return _state;
+}
+
+- (void)setState:(RSTLCopyState)state {
+    _state = state;
+    if (self.stateChanged) {
+        self.stateChanged(state, self.resultCode);
+    }
+}
+
+- (BOOL)isFinished {
+    return _finished;
+}
+
+- (BOOL)isExecuting {
+    return _executing;
+}
+
+- (void)setExecuting:(BOOL)executing {
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = executing;
+    [self didChangeValueForKey:@"isExecuting"];
+}
+
+- (void)setFinished:(BOOL)finished {
+    [self willChangeValueForKey:@"isFinished"];
+    _finished = finished;
+    [self didChangeValueForKey:@"isFinished"];
+}
+
 
 @end

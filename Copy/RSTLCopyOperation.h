@@ -54,6 +54,11 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 
 @interface RSTLCopyOperation : NSOperation
 
+@property BOOL verbose;
+@property BOOL dontOverwrite;
+@property BOOL recursive;
+@property BOOL force;
+@property BOOL quiet;
 @property (copy, nonatomic, readonly) NSString *fromPath;
 @property (copy, nonatomic, readonly) NSString *toPath;
 @property (nonatomic, copy) void (^progressBlock)(KBProgress *progress);
@@ -64,7 +69,7 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 // Not valid until operation has finished
 @property (readonly) int resultCode;
 
-- (instancetype)initWithFromPath:(NSString *)fromPath toPath:(NSString *)toPath;
+- (instancetype)initWithInputFile:(NSString *)fromPath toPath:(NSString *)toPath;
 
 @end
 
