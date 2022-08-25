@@ -17,10 +17,6 @@
 //  limitations under the License.
 //  
 
-#define ALog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__])
-#define DLog(format, ...) ALog(@"[Copy] %@", [NSString stringWithFormat:format, ## __VA_ARGS__])
-#define LOG_SELF        ALog(@"[Copy] %@ %@", self, NSStringFromSelector(_cmd))
-
 #import "RSTLCopyOperation.h"
 #include "copyfile.h"
 #include <sys/stat.h>
@@ -65,7 +61,7 @@ off_t fsize(const char *filename) {
         _toPath = [toPath copy];
         _currentFileSize = fsize([_fromPath UTF8String]);
         //DLog(@"_currentFileSize: %lu", (unsigned long)_currentFileSize);
-        _progress = KBMakeProgress(0, _currentFileSize, 0, fromPath);
+        _progress = KBMakeProgress(0, _currentFileSize, 0, toPath);
     }
     return self;
 }
@@ -83,39 +79,44 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         case COPYFILE_RECURSE_FILE:
             switch (stage) {
                 case COPYFILE_START:
-                    NSLog(@"File Start");
+                    self.progress.start = [NSDate date];
+                    self.currentFileSize = fsize(fromPath);
+                    self.progress.totalTime = self.currentFileSize;
+                    self.progress.processingFile = [NSString stringWithUTF8String:toPath];
+                    //VerboseLog(@"File Start %s size: %lu", fromPath, self.currentFileSize);
+                    
                     break;
                 case COPYFILE_FINISH:
-                    NSLog(@"File Finish");
+                    //VerboseLog(@"File Finish");
                     break;
                 case COPYFILE_ERR:
-                    NSLog(@"File Error %i", errno);
+                    VerboseLog(@"File Error %i", errno);
                     break;
             }
             break;
         case COPYFILE_RECURSE_DIR:
             switch (stage) {
                 case COPYFILE_START:
-                    NSLog(@"Dir Start");
+                    //VerboseLog(@"Dir Start");
                     break;
                 case COPYFILE_FINISH:
-                    NSLog(@"Dir Finish");
+                    //VerboseLog(@"Dir Finish");
                     break;
                 case COPYFILE_ERR:
-                    NSLog(@"Dir Error");
+                    VerboseLog(@"Dir Error");
                     break;
             }
             break;
         case COPYFILE_RECURSE_DIR_CLEANUP:
             switch (stage) {
                 case COPYFILE_START:
-                    NSLog(@"Dir Cleanup Start");
+                    //VerboseLog(@"Dir Cleanup Start");
                     break;
                 case COPYFILE_FINISH:
-                    NSLog(@"Dir Cleanup Finish");
+                    //VerboseLog(@"Dir Cleanup Finish");
                     break;
                 case COPYFILE_ERR:
-                    NSLog(@"Dir Cleanup Error");
+                    //VerboseLog(@"Dir Cleanup Error");
                     break;
             }
             break;
@@ -125,13 +126,13 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         case COPYFILE_COPY_XATTR:
             switch (stage) {
                 case COPYFILE_START:
-                    //NSLog(@"Xattr Start");
+                    //VerboseLog(@"Xattr Start");
                     break;
                 case COPYFILE_FINISH:
-                    //NSLog(@"Xattr Finish");
+                    //VerboseLog(@"Xattr Finish");
                     break;
                 case COPYFILE_ERR:
-                    //NSLog(@"Xattr Error");
+                    //VerboseLog(@"Xattr Error");
                     break;
             }
             break;
@@ -159,7 +160,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                     break;
                 }
                 case COPYFILE_ERR:
-                    NSLog(@"Data Error");
+                    VerboseLog(@"Data Error");
                     break;
             }
             break;
@@ -188,9 +189,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     if (fileExists([_toPath UTF8String])) {
         DLog(@"File already exists!!");
         if (self.force) {
-            if (_verbose){
-                DLog(@"'f'orcing, remove file!!");
-            }
+            VerboseLog(@"'f'orcing, remove file!!");
             remove([_toPath UTF8String]);
         } else {
             self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
@@ -203,9 +202,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    if (_verbose){
-        DLog(@"copying %s to %s...", fromPath, toPath);
-    }
+    VerboseLog(@"copying %s to %s...", fromPath, toPath);
     self.state = RSTLCopyInProgress;
     
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CB, &RSTLCopyFileCallback);
@@ -252,5 +249,43 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     [self didChangeValueForKey:@"isFinished"];
 }
 
++ (BOOL)isDebug {
+    BOOL db = [[NSUserDefaults standardUserDefaults] boolForKey:@"debug"];
+    //DLog(@"db: %d, contains: %d",db, [[[NSProcessInfo processInfo] arguments] containsObject:@"-d"] );
+    return db || [[[NSProcessInfo processInfo] arguments] containsObject:@"-d"];
+}
+
++ (BOOL)isVerbose {
+    BOOL vb = [[NSUserDefaults standardUserDefaults] boolForKey:@"verbose"];
+    //DLog(@"vb: %d, contains: %d",vb, [[[NSProcessInfo processInfo] arguments] containsObject:@"-v"] );
+    return vb || [[[NSProcessInfo processInfo] arguments] containsObject:@"-v"];
+}
+
++ (void)logLevel:(NSInteger)level string:(NSString *)string {
+    if (level == 0 || [self isVerbose]){ //info level
+        DLog(@"%@", string);
+    } else {
+        if ([self isVerbose]){
+            DLog(@"%@", string);
+        }
+    }
+}
+
++ (void)logLevel:(NSInteger)level stringWithFormat:(NSString *)fmt, ... {
+    //DLog(@"logLevel: %lu", level);
+    //return;
+    va_list args;
+    va_start(args, fmt);
+    va_end(args);
+    //NSString *output = [[NSString alloc] initWithFormat:fmt arguments:args];
+    //DLog(@"we made a output: %@", output);
+    if (level == 0){ //info level
+        DLog(fmt, args);
+    } else {
+        if ([self isVerbose]){
+            DLog(fmt, args);
+        }
+    }
+}
 
 @end

@@ -1,4 +1,5 @@
 #import "KBProgress.h"
+#import "RSTLCopyOperation.h" //log shiz
 
 inline KBProgress * KBMakeProgress(double elapsedTime, double totalTime, double speed, NSString * _Nullable processingFile) {
     KBProgress *pc = [KBProgress new];
@@ -16,5 +17,6 @@ inline KBProgress * KBMakeProgress(double elapsedTime, double totalTime, double 
     self.speed = self.elapsedTime/sec;
     return (self.totalTime - self.elapsedTime)/self.speed;
 }
+
 
 @end

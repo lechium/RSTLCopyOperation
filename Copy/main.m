@@ -134,7 +134,7 @@ int main(int argc, char * argv[]) {
         copyOperation.dontOverwrite = dontOverwrite;
         copyOperation.progressBlock = ^(KBProgress *progress) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
-            loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, 50, [[toPath lastPathComponent] UTF8String]);
+            loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, 50, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
         };
         copyOperation.stateChanged = ^(RSTLCopyState state, NSInteger resultCode) {
             //NSLog(@"state changed: %hhd code: %lu", state, resultCode);
