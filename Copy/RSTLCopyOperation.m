@@ -87,11 +87,11 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                     self.currentFileSize = fsize(fromPath);
                     self.progress.totalTime = self.currentFileSize;
                     if (fileExists(toPath)) {
-                        VerboseLog(@"file exists: %s", toPath);
+                        VerboseLog(@"File exists: %s", toPath);
                         off_t toSize = fsize(toPath);
                         off_t fromSize = fsize(fromPath);
                         if (toSize < fromSize) {
-                            VerboseLog(@"\nincomplete file size %lld vs %lld\n", toSize, fromSize);
+                            VerboseLog(@"Incomplete file size %lld vs %lld\n", toSize, fromSize);
                             remove(toPath);
                         }
                     }
@@ -203,7 +203,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         DLog(@"File exists: %@", _toPath);
         off_t toSize = fsize([_toPath UTF8String]);
         off_t fromSize = fsize([_fromPath UTF8String]);
-        VerboseLog(@"\ncompare sizes %lld vs %lld\n", toSize, fromSize);
+        VerboseLog(@"Compare sizes %lld vs %lld\n", toSize, fromSize);
     }
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
