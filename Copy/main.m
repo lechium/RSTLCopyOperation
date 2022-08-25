@@ -26,7 +26,7 @@
 @end
 
 // A nice loading bar. Credits: classdump-dyld
-static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, int width, const char *fileName) {
+static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, NSString *details, int width, const char *fileName) {
     // Calculuate the ratio of complete-to-incomplete.
     float ratio = currentValue/(float)totalValue;
     int   elapsed     = ratio * width;
@@ -47,7 +47,7 @@ static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remai
     
     // ANSI Control codes to go back to the
     // previous line and clear it.
-    printf("] %s <%s> \n\033[F\033[J",[rem UTF8String], fileName);
+    printf("] %s %s <%s> \n\033[F\033[J",[rem UTF8String], [details UTF8String], fileName);
 }
 
 int main(int argc, const char * argv[]) {
@@ -58,9 +58,9 @@ int main(int argc, const char * argv[]) {
             toPath = [fromPath lastPathComponent];
         }
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithFromPath:fromPath toPath:toPath];
-        copyOperation.progressBlock = ^(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime) {
+        copyOperation.progressBlock = ^(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime, NSString *details) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
-            loadBar(elapsedValue, totalSize, remainingTime, 50, [[toPath lastPathComponent] UTF8String]);
+            loadBar(elapsedValue, totalSize, remainingTime, details, 50, [[toPath lastPathComponent] UTF8String]);
         };
         copyOperation.stateChanged = ^(RSTLCopyState state, NSInteger resultCode) {
             //NSLog(@"state changed: %hhd code: %lu", state, resultCode);

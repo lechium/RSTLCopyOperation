@@ -51,7 +51,7 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 
 @property (copy, nonatomic, readonly) NSString *fromPath;
 @property (copy, nonatomic, readonly) NSString *toPath;
-@property (nonatomic, copy) void (^progressBlock)(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime);
+@property (nonatomic, copy) void (^progressBlock)(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime, NSString *details);
 @property (nonatomic, copy) void (^stageChanged)(NSInteger stage, NSInteger what);
 @property (nonatomic, copy) void (^stateChanged)(RSTLCopyState state, NSInteger resultCode);
 
