@@ -33,6 +33,9 @@ bool is_dir(const char *path) {
 }
 
 off_t fsize(const char *filename) {
+    if (is_dir(filename)) {
+        return [NSFileManager sizeForFolderAtPath:[NSString stringWithUTF8String:filename]];
+    }
     struct stat st;
     if (stat(filename, &st) == 0) {
         return st.st_size;
@@ -87,17 +90,13 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                         VerboseLog(@"file exists: %s", toPath);
                         off_t toSize = fsize(toPath);
                         off_t fromSize = fsize(fromPath);
-                        
                         if (toSize < fromSize) {
-                            fprintf(stdout, "\nincomplete file size %lld vs %lld\n", toSize, fromSize);
-                            remove(toPath);
-                        }
-                        if ([self force]){
+                            VerboseLog(@"\nincomplete file size %lld vs %lld\n", toSize, fromSize);
                             remove(toPath);
                         }
                     }
                     self.progress.processingFile = [NSString stringWithUTF8String:toPath];
-                    fprintf(stdout, "File Start %s size: %lu\n", fromPath, self.currentFileSize);
+                    VerboseLog(@"File Start %s size: %lu\n", fromPath, self.currentFileSize);
                     
                     break;
                 case COPYFILE_FINISH:
@@ -111,7 +110,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         case COPYFILE_RECURSE_DIR:
             switch (stage) {
                 case COPYFILE_START:
-                    VerboseLog(@"Dir Start: %s size: %lu", toPath, (unsigned long)[NSFileManager sizeForFolderAtPath:[NSString stringWithUTF8String:fromPath]]);
+                    VerboseLog(@"Dir Start: %s size: %lu", toPath, (unsigned long)fsize(fromPath));
                     break;
                 case COPYFILE_FINISH:
                     VerboseLog(@"Dir Finish: %s", toPath);
@@ -185,13 +184,9 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
 }
 
 - (int)flags {
-    // TODO: Figure out why COPYFILE_EXCL doesn't work for directories
-    // Probably need to do something in the callback
     int flags = COPYFILE_ALL|COPYFILE_NOFOLLOW | COPYFILE_EXCL;
-    DLog(@"flags: %i", flags);
     if (self.force) {
         flags &= ~COPYFILE_EXCL;
-        DLog(@"flags - COPYFILE_EXCL: %i", flags);
     }
     if (is_dir([self.fromPath UTF8String])) {
         flags |= COPYFILE_RECURSIVE;
@@ -208,55 +203,18 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         DLog(@"File exists: %@", _toPath);
         off_t toSize = fsize([_toPath UTF8String]);
         off_t fromSize = fsize([_fromPath UTF8String]);
-        bool isDir = is_dir([_toPath UTF8String]);
-        bool fromIsDir = is_dir([_fromPath UTF8String]);
-        if (fromIsDir) {
-            fromSize = [NSFileManager sizeForFolderAtPath:_fromPath];//[[[NSFileManager defaultManager] sizeForFolderAtPath:_fromPath error:nil] unsignedLongLongValue];
-        }
-        if (isDir) {
-            toSize = [NSFileManager sizeForFolderAtPath:_toPath];
-        }
         VerboseLog(@"\ncompare sizes %lld vs %lld\n", toSize, fromSize);
-        
-        if (self.force) {
-            VerboseLog(@"'f'orcing, remove file: %@", _toPath);
-            int returnStatus = 0;
-            if (isDir){
-                returnStatus = rmdir([_toPath UTF8String]);
-            } else {
-                returnStatus = remove([_toPath UTF8String]);
-            }
-            VerboseLog(@"Removed with return status: %i", returnStatus);
-        } else {
-            if (isDir && fromIsDir) { //might still have things we want to process
-                VerboseLog(@"two folders, keep trying to copy stuff...");
-                
-            } else {
-                VerboseLog(@"File already exists, force is not on, and both items are NOT folders... bailing.");
-                self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
-                copyfile_state_free(copyfileState);
-                [self setExecuting:false];
-                [self setFinished:true];
-                return;
-            }
-            
-        }
     }
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
     VerboseLog(@"copying %s to %s...", fromPath, toPath);
     self.state = RSTLCopyInProgress;
-    
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CB, &RSTLCopyFileCallback);
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CTX, (__bridge void *)self);
-    
     self.resultCode = copyfile(fromPath, toPath, copyfileState, [self flags]);
-    
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
-    
     copyfile_state_free(copyfileState);
-    
     [self setExecuting:false];
     [self setFinished:true];
 }
