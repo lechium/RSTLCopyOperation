@@ -42,7 +42,7 @@ off_t fsize(const char *filename) {
 @property RSTLCopyState state;
 @property int resultCode;
 @property NSUInteger currentFileSize;
-@property NSDate *start;
+@property KBProgress *progress;
 
 @end
 
@@ -86,6 +86,7 @@ off_t fsize(const char *filename) {
         _toPath = [toPath copy];
         _currentFileSize = fsize([_fromPath UTF8String]);
         //DLog(@"_currentFileSize: %lu", (unsigned long)_currentFileSize);
+        _progress = KBMakeProgress(0, _currentFileSize, 0, fromPath);
     }
     return self;
 }
@@ -161,19 +162,15 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                 {
                     off_t copiedBytes;
                     const int returnCode = copyfile_state_get(state, COPYFILE_STATE_COPIED, &copiedBytes);
-                    double remainingTime = 0;
                     if (returnCode == 0) {
-                        if (self.start == nil) {
+                        if (self.progress.start == nil) {
                             //fprintf(stdout, "setting start date...\n");
-                            self.start = [NSDate date];
+                            self.progress.start = [NSDate date];
                         } else {
-                            NSTimeInterval sec = [[NSDate date] timeIntervalSinceDate:self.start];
-                            double speed = copiedBytes/sec;
-                            remainingTime = (self.currentFileSize - copiedBytes)/speed;
-                            //fprintf(stdout, "remaining time: %f\n", remainingTime);
+                            self.progress.elapsedTime = copiedBytes;
                         }
                         if (self.progressBlock) {
-                            self.progressBlock(copiedBytes, self.currentFileSize, remainingTime);
+                            self.progressBlock(self.progress);
                         } else {
                             NSLog(@"Copied %@ of %s so far", FANCY_BYTES(copiedBytes), fromPath);
                         }

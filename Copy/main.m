@@ -60,9 +60,9 @@ int main(int argc, const char * argv[]) {
             toPath = [fromPath lastPathComponent];
         }
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithFromPath:fromPath toPath:toPath];
-        copyOperation.progressBlock = ^(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime) {
+        copyOperation.progressBlock = ^(KBProgress *progress) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
-            loadBar(elapsedValue, totalSize, remainingTime, 50, [[toPath lastPathComponent] UTF8String]);
+            loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, 50, [[toPath lastPathComponent] UTF8String]);
         };
         copyOperation.stateChanged = ^(RSTLCopyState state, NSInteger resultCode) {
             //NSLog(@"state changed: %hhd code: %lu", state, resultCode);

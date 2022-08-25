@@ -18,6 +18,7 @@
 //  
 
 #import <Foundation/Foundation.h>
+#import "KBProgress.h"
 
 // Disclaimer: This implementation is mostly just a tinker toy.
 // Copyfile is theoretically the replacement for the FS API that let you do copy operations and get progress callbacks,
@@ -55,7 +56,7 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 
 @property (copy, nonatomic, readonly) NSString *fromPath;
 @property (copy, nonatomic, readonly) NSString *toPath;
-@property (nonatomic, copy) void (^progressBlock)(NSInteger elapsedValue, NSInteger totalSize, NSInteger remainingTime);
+@property (nonatomic, copy) void (^progressBlock)(KBProgress *progress);
 @property (nonatomic, copy) void (^stageChanged)(NSInteger stage, NSInteger what);
 @property (nonatomic, copy) void (^stateChanged)(RSTLCopyState state, NSInteger resultCode);
 
