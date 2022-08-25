@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define OPTION_FLAGS "fnRvq"
+#define OPTION_FLAGS "fvq"
 char *progname;
 char *dname;
 bool quiet;
@@ -27,8 +27,6 @@ bool quiet;
 static struct option longopts[] = {
 
     { "force",                      no_argument, NULL,   'f' },
-    { "no-overwrite",               no_argument, NULL,   'n' },
-    { "recursive",                  no_argument, NULL,   'R' },
     { "verbose",                    no_argument, NULL,   'v' },
     { "quiet",                      no_argument, NULL,   'q' },
     { NULL,                         0, NULL,   0 }
@@ -80,36 +78,28 @@ static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remai
     printf("] %s %s <%s> \n\033[F\033[J",[rem UTF8String], [det UTF8String], fileName);
 }
 
+void usage() {
+    
+    printf("usage: %s -f [-vq] source_file target_file\n", [[[NSProcessInfo processInfo] processName] UTF8String]);
+    exit(0);
+}
+
 int main(int argc, char * argv[]) {
     BOOL verbose = false;
-    BOOL recursive = false;
     BOOL force = false;
-    BOOL dontOverwrite = false;
     int flag;
     NSString *myOpts = @"";
     while ((flag = getopt_long(argc, argv, OPTION_FLAGS, longopts, NULL)) != -1) {
         switch(flag) {
             case 'f':
                 force = true;
-                dontOverwrite = false;
-                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"n" withString:@""];
                 myOpts = [myOpts stringByAppendingString:@"f"];
-                break;
-            case 'R':
-                recursive = true;
-                myOpts = [myOpts stringByAppendingString:@"R"];
                 break;
             case 'v':
                 verbose = true;
                 quiet = false;
                 myOpts = [myOpts stringByReplacingOccurrencesOfString:@"q" withString:@""];
                 myOpts = [myOpts stringByAppendingString:@"v"];
-                break;
-            case 'n':
-                dontOverwrite = true;
-                force = false;
-                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"f" withString:@""];
-                myOpts = [myOpts stringByAppendingString:@"n"];
                 break;
             case 'q':
                 quiet = true;
@@ -129,9 +119,7 @@ int main(int argc, char * argv[]) {
         }
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithInputFile:fromPath toPath:toPath];
         copyOperation.force = force;
-        copyOperation.recursive = recursive;
         copyOperation.verbose = verbose;
-        copyOperation.dontOverwrite = dontOverwrite;
         copyOperation.progressBlock = ^(KBProgress *progress) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
             loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, 50, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
@@ -163,6 +151,8 @@ int main(int argc, char * argv[]) {
         }
         [queue waitUntilAllOperationsAreFinished];
         return copyOperation.resultCode;
+    } else {
+        usage();
     }
     return 0;
 }

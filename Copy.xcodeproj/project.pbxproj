@@ -12,6 +12,7 @@
 		3932910F16CB6A6400123628 /* Copy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3932910E16CB6A6400123628 /* Copy.1 */; };
 		3932911716CB741200123628 /* RSTLCopyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3932911616CB741200123628 /* RSTLCopyOperation.m */; };
 		4CD0C2FC28B7FB2500606E83 /* KBProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0C2FB28B7FB2500606E83 /* KBProgress.m */; };
+		4CD0C2FF28B8349600606E83 /* NSFileManager+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,8 @@
 		3932911616CB741200123628 /* RSTLCopyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSTLCopyOperation.m; sourceTree = "<group>"; };
 		4CD0C2FA28B7FB2500606E83 /* KBProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBProgress.h; sourceTree = "<group>"; };
 		4CD0C2FB28B7FB2500606E83 /* KBProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBProgress.m; sourceTree = "<group>"; };
+		4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Size.m"; sourceTree = "<group>"; };
+		4CD0C2FE28B8349600606E83 /* NSFileManager+Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Size.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +82,8 @@
 		3932910916CB6A6400123628 /* Copy */ = {
 			isa = PBXGroup;
 			children = (
+				4CD0C2FE28B8349600606E83 /* NSFileManager+Size.h */,
+				4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */,
 				3932910A16CB6A6400123628 /* main.m */,
 				4CD0C2FA28B7FB2500606E83 /* KBProgress.h */,
 				4CD0C2FB28B7FB2500606E83 /* KBProgress.m */,
@@ -151,6 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3932910B16CB6A6400123628 /* main.m in Sources */,
+				4CD0C2FF28B8349600606E83 /* NSFileManager+Size.m in Sources */,
 				3932911716CB741200123628 /* RSTLCopyOperation.m in Sources */,
 				4CD0C2FC28B7FB2500606E83 /* KBProgress.m in Sources */,
 			);

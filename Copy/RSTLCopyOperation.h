@@ -61,8 +61,6 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 @interface RSTLCopyOperation : NSOperation
 
 @property BOOL verbose;
-@property BOOL dontOverwrite;
-@property BOOL recursive;
 @property BOOL force;
 @property BOOL quiet;
 @property (copy, nonatomic, readonly) NSString *fromPath;
