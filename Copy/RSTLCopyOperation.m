@@ -249,12 +249,6 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     [self didChangeValueForKey:@"isFinished"];
 }
 
-+ (BOOL)isDebug {
-    BOOL db = [[NSUserDefaults standardUserDefaults] boolForKey:@"debug"];
-    //DLog(@"db: %d, contains: %d",db, [[[NSProcessInfo processInfo] arguments] containsObject:@"-d"] );
-    return db || [[[NSProcessInfo processInfo] arguments] containsObject:@"-d"];
-}
-
 + (BOOL)isVerbose {
     BOOL vb = [[NSUserDefaults standardUserDefaults] boolForKey:@"verbose"];
     //DLog(@"vb: %d, contains: %d",vb, [[[NSProcessInfo processInfo] arguments] containsObject:@"-v"] );
