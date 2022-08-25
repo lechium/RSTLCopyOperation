@@ -21,7 +21,6 @@
 #define DLog(format, ...) ALog(@"[Copy] %@", [NSString stringWithFormat:format, ## __VA_ARGS__])
 #define LOG_SELF        ALog(@"[Copy] %@ %@", self, NSStringFromSelector(_cmd))
 
-
 #import "RSTLCopyOperation.h"
 #include "copyfile.h"
 #include <sys/stat.h>
@@ -176,7 +175,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                         if (self.progressBlock) {
                             self.progressBlock(copiedBytes, self.currentFileSize, remainingTime);
                         } else {
-                            NSLog(@"Copied %@ of %s so far", [NSByteCountFormatter stringFromByteCount:copiedBytes countStyle:NSByteCountFormatterCountStyleFile], fromPath);
+                            NSLog(@"Copied %@ of %s so far", FANCY_BYTES(copiedBytes), fromPath);
                         }
                     } else {
                         NSLog(@"Could not retrieve copyfile state");
