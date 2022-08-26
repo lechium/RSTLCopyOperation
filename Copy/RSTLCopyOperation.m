@@ -64,8 +64,11 @@ off_t fsize(const char *filename) {
         _fromPath = [fromPath copy];
         _toPath = [toPath copy];
         _currentFileSize = fsize([_fromPath UTF8String]);
+        if (!is_dir([fromPath UTF8String]) && [self.toPath isEqualToString:@"."]){
+            _toPath = [_fromPath lastPathComponent];
+        }
         //DLog(@"_currentFileSize: %lu", (unsigned long)_currentFileSize);
-        _progress = KBMakeProgress(0, _currentFileSize, 0, toPath);
+        _progress = KBMakeProgress(0, _currentFileSize, 0, _toPath);
     }
     return self;
 }
@@ -223,16 +226,10 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    if (is_dir(toPath)){
-        if (self.verbose) {
-            fprintf(stderr,"\n%s AvailableSpace: %s\n", toPath, [FANCY_BYTES(availableSpace) UTF8String]);
-            fprintf(stdout, "Space After copy: %s\n", [FANCY_BYTES(spaceAfter) UTF8String]);
-       
-        }
-    }
-    
-    if (is_dir(fromPath)) {
-        VerboseLog(@"%s size: %@\n---------------------\n\n", fromPath, FANCY_BYTES(fsize(fromPath)));
+    VerboseLog(@"\n%s size: %@", fromPath, FANCY_BYTES(fsize(fromPath)));
+    if (self.verbose) {
+        fprintf(stderr,"%s AvailableSpace: %s\n", toPath, [FANCY_BYTES(availableSpace) UTF8String]);
+        fprintf(stdout, "Space After copy: %s\n---------------------\n\n", [FANCY_BYTES(spaceAfter) UTF8String]);
     }
     if (self.verbose)fprintf(stdout, "%s -> %s\n", fromPath, toPath);
     self.state = RSTLCopyInProgress;
