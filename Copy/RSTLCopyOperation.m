@@ -221,17 +221,26 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    if (self.verbose)fprintf(stdout, "%s -> %s\n", fromPath, toPath);
-    if (is_dir(fromPath)) {
-        VerboseLog(@"%s size: %@", fromPath, FANCY_BYTES(fsize(fromPath)));
+    if (is_dir(toPath)){
+        if (self.verbose) {
+            CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
+            fprintf(stderr,"\n%s AvailableSpace: %s\n", toPath, [FANCY_BYTES(availableSpace) UTF8String]);
+        }
     }
+    
+    if (is_dir(fromPath)) {
+        VerboseLog(@"%s size: %@\n---------------------\n\n", fromPath, FANCY_BYTES(fsize(fromPath)));
+    }
+    if (self.verbose)fprintf(stdout, "%s -> %s\n", fromPath, toPath);
     self.state = RSTLCopyInProgress;
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CB, &RSTLCopyFileCallback);
     copyfile_state_set(copyfileState, COPYFILE_STATE_STATUS_CTX, (__bridge void *)self);
     self.resultCode = copyfile(fromPath, toPath, copyfileState, [self flags]);
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
     copyfile_state_free(copyfileState);
-    fprintf(stdout,"\nCopied %s from %s to %s\n", [FANCY_BYTES(fsize([_toPath UTF8String])) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
+    if (self.verbose) {
+        fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(fsize([_toPath UTF8String])) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
+    }
     [self setExecuting:false];
     [self setFinished:true];
 }

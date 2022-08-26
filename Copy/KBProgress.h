@@ -14,6 +14,7 @@ KBProgress * KBMakeProgress(double elapsedTime, double totalTime, double speed, 
 @property NSDate *start;
 @property (nonatomic, strong) NSString *processingFile;
 - (double)calculatedRemainingTime;
+- (NSProgress *)progressRepresentation;
 @end
 
 NS_ASSUME_NONNULL_END
