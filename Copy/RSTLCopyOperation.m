@@ -212,10 +212,12 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     [self setFinished:false];
     copyfile_state_t copyfileState = copyfile_state_alloc();
     
+    CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
+    off_t fromSize = fsize([_fromPath UTF8String]);
+    CGFloat spaceAfter = availableSpace - fromSize; //the amount of space left after the copy is complete
     if (fileExists([_toPath UTF8String]) && !is_dir([_toPath UTF8String])) {
         VerboseLog(@"%@ not overwritten", _toPath);
         off_t toSize = fsize([_toPath UTF8String]);
-        off_t fromSize = fsize([_fromPath UTF8String]);
         VerboseLog(@"Compare sizes %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
     }
     
@@ -223,8 +225,9 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     const char *toPath = [self.toPath fileSystemRepresentation];
     if (is_dir(toPath)){
         if (self.verbose) {
-            CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
             fprintf(stderr,"\n%s AvailableSpace: %s\n", toPath, [FANCY_BYTES(availableSpace) UTF8String]);
+            fprintf(stdout, "Space After copy: %s\n", [FANCY_BYTES(spaceAfter) UTF8String]);
+       
         }
     }
     
@@ -239,7 +242,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
     copyfile_state_free(copyfileState);
     if (self.verbose) {
-        fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(fsize([_toPath UTF8String])) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
+        fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(fsize([_fromPath UTF8String])) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
     }
     [self setExecuting:false];
     [self setFinished:true];

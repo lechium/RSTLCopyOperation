@@ -114,9 +114,10 @@ int main(int argc, char * argv[]) {
     if (argc == 2){
         NSString *fromPath = [NSString stringWithUTF8String:argv[0]];
         NSString *toPath = [NSString stringWithUTF8String:argv[1]];
+        /*
         if ([toPath isEqualToString:@"."]) {
             toPath = [fromPath lastPathComponent];
-        }
+        } */
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithInputFile:fromPath toPath:toPath];
         copyOperation.force = force;
         copyOperation.verbose = verbose;
