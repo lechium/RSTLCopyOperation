@@ -50,27 +50,55 @@ static struct option longopts[] = {
 
 @end
 
+static inline int barWidth(off_t currentValue, off_t totalValue, NSInteger remaining, int width, NSInteger screenWidth, const char *fileName) {
+    float ratio = currentValue/(float)totalValue;
+    int   elapsed     = ratio * width;
+    int remain = width - elapsed;
+    NSString *rem = @"";
+    NSString *det = @"";
+    NSInteger percentSize = 11; // %XX [
+    NSInteger nameBrackets = 2; // <>
+    NSInteger filenameLength = [NSString stringWithUTF8String:fileName].length;
+    NSInteger stringLength = remain + percentSize + elapsed + nameBrackets + filenameLength;
+    if (remaining != 0) { //@"[00:00:00]"
+        rem = [[NSString stringWithFormat:@"%lu",remaining] TIMEFormat];
+        det = BYTE_PROGRESS(currentValue, totalValue);
+        stringLength+= rem.length; //should always be 10
+        stringLength+= det.length;
+    }
+    //printf("length: %lu width: %lu rem: %lu det: %lu\n", stringLength, screenWidth, rem.length, det.length);
+    if (stringLength > screenWidth) {
+        NSInteger diff = stringLength - screenWidth;
+        NSInteger newWidth = width - diff;
+        //printf("%lu > %lu diff = %lu nw: %lu\n", stringLength, screenWidth, diff, newWidth);
+        return (int)newWidth;
+    }
+    return width;
+}
+
 // A nice loading bar. Credits: classdump-dyld
-static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, int width, const char *fileName) {
+static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, int width, NSInteger screenWidth, const char *fileName) {
     // Calculuate the ratio of complete-to-incomplete.
     if (quiet) return;
     float ratio = currentValue/(float)totalValue;
     int   elapsed     = ratio * width;
     NSString *rem = @"";
     NSString *det = @"";
+    if (remaining != 0) { //@"[00:00:00]"
+        rem = [[NSString stringWithFormat:@"%lu",remaining] TIMEFormat];
+        det = BYTE_PROGRESS(currentValue, totalValue);
+    }
+    
     // Show the percentage complete.
     printf("%3d%% [", (int)(ratio*100));
     
     // Show the load bar.
-    for (int x=0; x<elapsed; x++)
+    for (int x=0; x<elapsed; x++) {
         printf("=");
+    }
     
-    for (int x=elapsed; x<width; x++)
+    for (int x=elapsed; x<width; x++) {
         printf(" ");
-    
-    if (remaining != 0) {
-        rem = [[NSString stringWithFormat:@"%lu",remaining] TIMEFormat];
-        det = BYTE_PROGRESS(currentValue, totalValue);
     }
     
     // ANSI Control codes to go back to the
@@ -88,6 +116,7 @@ int main(int argc, char * argv[]) {
     BOOL verbose = false;
     BOOL force = false;
     int flag;
+    NSInteger width = [RSTLCopyOperation width];
     NSString *myOpts = @"";
     while ((flag = getopt_long(argc, argv, OPTION_FLAGS, longopts, NULL)) != -1) {
         switch(flag) {
@@ -121,9 +150,24 @@ int main(int argc, char * argv[]) {
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithInputFile:fromPath toPath:toPath];
         copyOperation.force = force;
         copyOperation.verbose = verbose;
+        //DLog(@"width: %lu", width);
+        __block int calcBarWidth = 0;
         copyOperation.progressBlock = ^(KBProgress *progress) {
             //NSLog(@"%lu/%lu", elapsedValue, totalSize);
-            loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, 50, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
+            int barSize = 50;
+            if (width < 100){
+                barSize = 30;
+            }
+            if (calcBarWidth == 0){
+                calcBarWidth = barWidth(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, barSize, width, [[progress processingFile] UTF8String]);
+                //DLog(@"calcBarWidth: %lu", calcBarWidth);
+                loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
+            } else {
+                loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
+            }
+           
+            
+            
         };
         copyOperation.stateChanged = ^(RSTLCopyState state, NSInteger resultCode) {
             //NSLog(@"state changed: %hhd code: %lu", state, resultCode);

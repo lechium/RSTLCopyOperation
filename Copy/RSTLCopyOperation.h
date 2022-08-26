@@ -76,5 +76,6 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 - (instancetype)initWithInputFile:(NSString *)fromPath toPath:(NSString *)toPath;
 + (void)logLevel:(NSInteger)level string:(NSString *)string;
 + (void)logLevel:(NSInteger)level stringWithFormat:(NSString *)fmt, ...;
++ (NSInteger)width;
 @end
 

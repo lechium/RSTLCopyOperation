@@ -105,23 +105,7 @@ long long do_ls(const char *name, int returnType) {
     }
 }
 
-+ (void)asyncCountForItemAtPath:(NSString *)source completion:(void(^)(NSUInteger count))block {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSUInteger size = [self countForFolderAtPath:source];
-        if (block) {
-            block(size);
-        }
-    });
-}
 
-+ (void)asyncSizeForItemAtPath:(NSString *)source completion:(void(^)(NSUInteger size))block {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSUInteger size = [self sizeForFolderAtPath:source];
-        if (block) {
-            block(size);
-        }
-    });
-}
 
 + (NSUInteger)sizeForFolderAtPath:(NSString *)source {
     return do_ls([source UTF8String], 0);
