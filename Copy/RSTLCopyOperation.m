@@ -87,17 +87,29 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                     self.currentFileSize = fsize(fromPath);
                     self.progress.totalTime = self.currentFileSize;
                     if (fileExists(toPath)) {
-                        VerboseLog(@"File exists: %s", toPath);
+                        //VerboseLog(@"File exists: %s", toPath);
                         off_t toSize = fsize(toPath);
                         off_t fromSize = fsize(fromPath);
                         if (toSize < fromSize) {
                             VerboseLog(@"Incomplete file size %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
                             remove(toPath);
+                        } else { // exists and size is equal to the expected size
+                            if (self.verbose) {
+                                if (self.force) {
+                                    fprintf(stdout, "%s -> %s\n", fromPath, toPath);
+                                    self.progress.processingFile = [NSString stringWithUTF8String:toPath];
+                                    
+                                } else {
+                                    fprintf(stdout, "%s not overwritten\n", toPath);
+                                    return COPYFILE_SKIP;
+                                }
+                            }
                         }
+                    } else {
+                        self.progress.processingFile = [NSString stringWithUTF8String:toPath];
+                        if (self.verbose) fprintf(stdout, "%s -> %s\n", fromPath, toPath);
                     }
-                    self.progress.processingFile = [NSString stringWithUTF8String:toPath];
-                    VerboseLog(@"File Start %s size: %@\n", fromPath, FANCY_BYTES(self.currentFileSize));
-                    
+                    //VerboseLog(@"File Start %s size: %@\n", fromPath, FANCY_BYTES(self.currentFileSize));
                     break;
                 case COPYFILE_FINISH:
                     //VerboseLog(@"File Finish");
@@ -110,13 +122,14 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         case COPYFILE_RECURSE_DIR:
             switch (stage) {
                 case COPYFILE_START:
-                    VerboseLog(@"Dir Start: %s size: %@", toPath, FANCY_BYTES(fsize(fromPath)));
+                    //VerboseLog(@"Dir Start: %s size: %@", toPath, FANCY_BYTES(fsize(fromPath)));
+                    if (self.verbose) fprintf(stdout, "%s -> %s\n", fromPath, toPath);
                     break;
                 case COPYFILE_FINISH:
-                    VerboseLog(@"Dir Finish: %s", toPath);
+                    //VerboseLog(@"Dir Finish: %s", toPath);
                     break;
                 case COPYFILE_ERR:
-                    VerboseLog(@"Dir Error: %s", toPath);
+                    //VerboseLog(@"Dir Error: %s", toPath);
                     break;
             }
             break;
@@ -184,7 +197,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
 }
 
 - (int)flags {
-    int flags = COPYFILE_ALL|COPYFILE_NOFOLLOW | COPYFILE_EXCL;
+    int flags = COPYFILE_ALL|COPYFILE_NOFOLLOW|COPYFILE_EXCL;
     if (self.force) {
         flags &= ~COPYFILE_EXCL;
     }
@@ -199,8 +212,8 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     [self setFinished:false];
     copyfile_state_t copyfileState = copyfile_state_alloc();
     
-    if (fileExists([_toPath UTF8String])) {
-        DLog(@"File exists: %@", _toPath);
+    if (fileExists([_toPath UTF8String]) && !is_dir([_toPath UTF8String])) {
+        VerboseLog(@"%@ not overwritten", _toPath);
         off_t toSize = fsize([_toPath UTF8String]);
         off_t fromSize = fsize([_fromPath UTF8String]);
         VerboseLog(@"Compare sizes %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
@@ -208,7 +221,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    VerboseLog(@"Copying %s to %s...", fromPath, toPath);
+    if (self.verbose)fprintf(stdout, "%s -> %s\n", fromPath, toPath);
     if (is_dir(fromPath)) {
         VerboseLog(@"%s size: %@", fromPath, FANCY_BYTES(fsize(fromPath)));
     }
@@ -218,6 +231,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     self.resultCode = copyfile(fromPath, toPath, copyfileState, [self flags]);
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
     copyfile_state_free(copyfileState);
+    fprintf(stdout,"\nCopied %s from %s to %s\n", [FANCY_BYTES(fsize([_toPath UTF8String])) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
     [self setExecuting:false];
     [self setFinished:true];
 }

@@ -40,7 +40,7 @@
 // I wouldn't use in any real software.
 
 #define ALog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__])
-#define DLog(format, ...) ALog(@"[Copy] %@", [NSString stringWithFormat:format, ## __VA_ARGS__])
+#define DLog(format, ...) ALog(@"%@", [NSString stringWithFormat:format, ## __VA_ARGS__])
 #define RSTLog(L, format, ...) [RSTLCopyOperation logLevel:L string:[NSString stringWithFormat:format, ## __VA_ARGS__]]
 #define VerboseLog(format, ...)RSTLog(1,format, ## __VA_ARGS__)
 #define InfoLog(format, ...)RSTLog(0,format, ## __VA_ARGS__)
