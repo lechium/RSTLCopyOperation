@@ -92,7 +92,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                     if (fileExists(toPath)) {
                         //VerboseLog(@"File exists: %s", toPath);
                         off_t toSize = fsize(toPath);
-                        off_t fromSize = fsize(fromPath);
+                        off_t fromSize = self.currentFileSize;
                         if (toSize < fromSize) {
                             VerboseLog(@"Incomplete file size %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
                             remove(toPath);
@@ -125,7 +125,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         case COPYFILE_RECURSE_DIR:
             switch (stage) {
                 case COPYFILE_START:
-                    //VerboseLog(@"Dir Start: %s size: %@", toPath, FANCY_BYTES(fsize(fromPath)));
+                    //VerboseLog(@"Dir Start: %s size: %@", toPath, FANCY_BYTES(_currentFileSize));
                     if (self.verbose) fprintf(stdout, "%s -> %s\n", fromPath, toPath);
                     break;
                 case COPYFILE_FINISH:
@@ -216,7 +216,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     copyfile_state_t copyfileState = copyfile_state_alloc();
     
     CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
-    off_t fromSize = fsize([_fromPath UTF8String]);
+    off_t fromSize = _currentFileSize;
     CGFloat spaceAfter = availableSpace - fromSize; //the amount of space left after the copy is complete
     if (fileExists([_toPath UTF8String]) && !is_dir([_toPath UTF8String])) {
         VerboseLog(@"%@ not overwritten", _toPath);
@@ -226,7 +226,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
-    VerboseLog(@"\n%s size: %@", fromPath, FANCY_BYTES(fsize(fromPath)));
+    VerboseLog(@"\n%s size: %@", fromPath, FANCY_BYTES(_currentFileSize));
     if (self.verbose) {
         fprintf(stderr,"%s AvailableSpace: %s\n", toPath, [FANCY_BYTES(availableSpace) UTF8String]);
         fprintf(stdout, "Space After copy: %s\n---------------------\n\n", [FANCY_BYTES(spaceAfter) UTF8String]);
@@ -239,7 +239,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
     copyfile_state_free(copyfileState);
     if (self.verbose) {
-        fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(fsize([_fromPath UTF8String])) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
+        fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(_currentFileSize) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
     }
     [self setExecuting:false];
     [self setFinished:true];
