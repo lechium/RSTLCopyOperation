@@ -52,6 +52,8 @@ off_t fsize(const char *filename) {
 @property RSTLCopyState state;
 @property int resultCode;
 @property NSUInteger currentFileSize;
+@property NSUInteger initialFileSize;
+@property NSInteger fileCount;
 @property KBProgress *progress;
 
 @end
@@ -63,7 +65,20 @@ off_t fsize(const char *filename) {
     if (self) {
         _fromPath = [fromPath copy];
         _toPath = [toPath copy];
-        _currentFileSize = fsize([_fromPath UTF8String]);
+        if (is_dir([_fromPath UTF8String])) {
+            NSDate *start = [NSDate date];
+            [[NSFileManager defaultManager] ls:[_fromPath UTF8String] completion:^(NSInteger size, NSInteger count) {
+                NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:start];
+                DLog(@"Fetched folder size: %@ with file count: %lu in %f seconds", FANCY_BYTES(size), count, interval);
+                _initialFileSize = size;
+                _fileCount = count;
+            }];
+           
+        } else {
+            _currentFileSize = fsize([_fromPath UTF8String]);
+            _initialFileSize = _currentFileSize;
+            
+        }
         if (!is_dir([fromPath UTF8String]) && [self.toPath isEqualToString:@"."]){
             _toPath = [_fromPath lastPathComponent];
         }
@@ -239,7 +254,11 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     self.state = (self.resultCode == 0) ? RSTLCopyFinished : RSTLCopyFailed;
     copyfile_state_free(copyfileState);
     if (self.verbose) {
-        fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(_currentFileSize) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
+        if (self.fileCount > 0) {
+            fprintf(stdout,"\nCopied %s in %li files from %s to %s\n\n", [FANCY_BYTES(_initialFileSize) UTF8String], self.fileCount, [_fromPath UTF8String], [_toPath UTF8String]);
+        } else {
+            fprintf(stdout,"\nCopied %s from %s to %s\n\n", [FANCY_BYTES(_initialFileSize) UTF8String], [_fromPath UTF8String], [_toPath UTF8String]);
+        }
     }
     [self setExecuting:false];
     [self setFinished:true];
