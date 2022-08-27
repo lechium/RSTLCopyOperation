@@ -174,17 +174,11 @@ int main(int argc, char * argv[]) {
             }
             if (calcBarWidth == 0){
                 calcBarWidth = barWidth(progress, barSize, width);
-                //calcBarWidth = barWidth(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, barSize, width, [[progress processingFile] UTF8String]);
                 //DLog(@"calcBarWidth: %lu", calcBarWidth);
                 loadBar(progress, calcBarWidth, width);
-                //oadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
             } else {
                 loadBar(progress, calcBarWidth, width);
-                //loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
             }
-           
-            
-            
         };
         copyOperation.stateChanged = ^(RSTLCopyState state, NSInteger resultCode) {
             //NSLog(@"state changed: %hhd code: %lu", state, resultCode);
