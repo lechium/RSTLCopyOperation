@@ -235,7 +235,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
             }
         }];
        
-    } else {
+    } else { //isnt dir
         _currentFileSize = fsize([_fromPath UTF8String]);
         _initialFileSize = _currentFileSize;
         if (self.safe) {
@@ -243,7 +243,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
             return;
         }
     }
-    if (!_safe){
+    if (!self.safe){
         [self makingCopies];
     }
 }
