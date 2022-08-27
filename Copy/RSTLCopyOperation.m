@@ -225,6 +225,14 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     return flags;
 }
 
+- (void)fail {
+    
+    self.resultCode = -1;
+    self.state = RSTLCopyFailed;
+    [self setExecuting:false];
+    [self setFinished:true];
+}
+
 - (void)main {
     [self setExecuting:true];
     [self setFinished:false];
@@ -233,10 +241,15 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
     off_t fromSize = _currentFileSize;
     CGFloat spaceAfter = availableSpace - fromSize; //the amount of space left after the copy is complete
-    if (fileExists([_toPath UTF8String]) && !is_dir([_toPath UTF8String])) {
+    if (fileExists([_toPath UTF8String]) && !is_dir([_toPath UTF8String]) && !self.force) {
         VerboseLog(@"%@ not overwritten", _toPath);
         off_t toSize = fsize([_toPath UTF8String]);
         VerboseLog(@"Compare sizes %@ vs %@\n", FANCY_BYTES(toSize), FANCY_BYTES(fromSize));
+        if (toSize != fromSize){
+            VerboseLog(@"size mismatch, maybe force overwrite?");
+        }
+        [self fail];
+        return;
     }
     
     const char *fromPath = [self.fromPath fileSystemRepresentation];

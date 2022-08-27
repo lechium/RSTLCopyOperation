@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KBProgress.h"
+#include <libgen.h>
 
 // Disclaimer: This implementation is mostly just a tinker toy.
 // Copyfile is theoretically the replacement for the FS API that let you do copy operations and get progress callbacks,
@@ -39,8 +40,10 @@
 // and personally I think that any API with that in the header
 // I wouldn't use in any real software.
 
+#define __SHORT_FILE__ basename(__FILE__)
 #define ALog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__])
 #define DLog(format, ...) ALog(@"%@", [NSString stringWithFormat:format, ## __VA_ARGS__])
+#define LineLog(format, ...) ALog(@"[%s:%i] %@", __SHORT_FILE__, __LINE__, [NSString stringWithFormat:format, ## __VA_ARGS__])
 #define RSTLog(L, format, ...) [RSTLCopyOperation logLevel:L string:[NSString stringWithFormat:format, ## __VA_ARGS__]]
 #define VerboseLog(format, ...)RSTLog(1,format, ## __VA_ARGS__)
 #define InfoLog(format, ...)RSTLog(0,format, ## __VA_ARGS__)
