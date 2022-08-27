@@ -57,6 +57,7 @@ static inline int barWidth(KBProgress *progress, int width, NSInteger screenWidt
     int remain = width - elapsed;
     NSString *rem = @"";
     NSString *det = @"";
+    NSString *fc = @"";
     NSInteger percentSize = 11; // %XX [
     NSInteger nameBrackets = 2; // <>
     NSInteger filenameLength = [progress processingFile].length;
@@ -66,6 +67,10 @@ static inline int barWidth(KBProgress *progress, int width, NSInteger screenWidt
         det = BYTE_PROGRESS(progress.elapsedTime, progress.totalTime);
         stringLength+= rem.length; //should always be 10
         stringLength+= det.length;
+        if (progress.totalCount > 1){
+            fc = [NSString stringWithFormat:@"%lu/%lu", progress.processedCount, progress.totalCount];
+            stringLength+= fc.length;
+        }
     }
     //printf("length: %lu width: %lu rem: %lu det: %lu\n", stringLength, screenWidth, rem.length, det.length);
     if (stringLength > screenWidth) {
