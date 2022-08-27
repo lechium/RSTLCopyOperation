@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define OPTION_FLAGS "fvq"
+#define OPTION_FLAGS "fvqs"
 char *progname;
 char *dname;
 bool quiet;
@@ -29,6 +29,7 @@ static struct option longopts[] = {
     { "force",                      no_argument, NULL,   'f' },
     { "verbose",                    no_argument, NULL,   'v' },
     { "quiet",                      no_argument, NULL,   'q' },
+    { "safe",                       no_argument, NULL,   's' },
     { NULL,                         0, NULL,   0 }
 };
 
@@ -115,6 +116,7 @@ void usage() {
 int main(int argc, char * argv[]) {
     BOOL verbose = false;
     BOOL force = false;
+    BOOL safe = false;
     int flag;
     NSInteger width = [RSTLCopyOperation width];
     NSString *myOpts = @"";
@@ -136,6 +138,10 @@ int main(int argc, char * argv[]) {
                 myOpts = [myOpts stringByReplacingOccurrencesOfString:@"v" withString:@""];
                 myOpts = [myOpts stringByAppendingString:@"q"];
                 break;
+            case 's':
+                safe = true;
+                myOpts = [myOpts stringByAppendingString:@"s"];
+                break;
         }
     }
     argc -= optind;
@@ -149,6 +155,7 @@ int main(int argc, char * argv[]) {
         } */
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithInputFile:fromPath toPath:toPath];
         copyOperation.force = force;
+        copyOperation.safe = safe;
         copyOperation.verbose = verbose;
         //DLog(@"width: %lu", width);
         __block int calcBarWidth = 0;

@@ -66,6 +66,7 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 @property BOOL verbose;
 @property BOOL force;
 @property BOOL quiet;
+@property BOOL safe;
 @property (copy, nonatomic, readonly) NSString *fromPath;
 @property (copy, nonatomic, readonly) NSString *toPath;
 @property (nonatomic, copy) void (^progressBlock)(KBProgress *progress);

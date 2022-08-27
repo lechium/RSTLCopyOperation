@@ -59,7 +59,7 @@ long long do_ls(const char *name, int returnType) {
     return total;
 }
 
-- (void)ls:(const char *)name completion:(void(^)(NSInteger size, NSInteger count))block {
++ (void)ls:(const char *)name completion:(void(^)(NSInteger size, NSInteger count))block {
     DIR *dir_ptr;
     struct dirent *direntp;
     struct stat info;

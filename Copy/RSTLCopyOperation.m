@@ -65,25 +65,11 @@ off_t fsize(const char *filename) {
     if (self) {
         _fromPath = [fromPath copy];
         _toPath = [toPath copy];
-        if (is_dir([_fromPath UTF8String])) {
-            NSDate *start = [NSDate date];
-            [[NSFileManager defaultManager] ls:[_fromPath UTF8String] completion:^(NSInteger size, NSInteger count) {
-                NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:start];
-                DLog(@"Fetched folder size: %@ with file count: %lu in %f seconds", FANCY_BYTES(size), count, interval);
-                _initialFileSize = size;
-                _fileCount = count;
-            }];
-           
-        } else {
-            _currentFileSize = fsize([_fromPath UTF8String]);
-            _initialFileSize = _currentFileSize;
-            
-        }
         if (!is_dir([fromPath UTF8String]) && [self.toPath isEqualToString:@"."]){
             _toPath = [_fromPath lastPathComponent];
         }
         //DLog(@"_currentFileSize: %lu", (unsigned long)_currentFileSize);
-        _progress = KBMakeProgress(0, _currentFileSize, 0, _toPath);
+        
     }
     return self;
 }
@@ -236,10 +222,42 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
 - (void)main {
     [self setExecuting:true];
     [self setFinished:false];
+    BOOL isDir = (is_dir([_fromPath UTF8String]));
+    if (isDir) {
+        NSDate *start = [NSDate date];
+        [NSFileManager ls:[_fromPath UTF8String] completion:^(NSInteger size, NSInteger count) {
+            NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:start];
+            DLog(@"Fetched folder size: %@ with file count: %lu in %f seconds", FANCY_BYTES(size), count, interval);
+            _initialFileSize = size;
+            _fileCount = count;
+            if (self.safe) {
+                [self makingCopies];
+            }
+        }];
+       
+    } else {
+        _currentFileSize = fsize([_fromPath UTF8String]);
+        _initialFileSize = _currentFileSize;
+        if (self.safe) {
+            [self makingCopies];
+            return;
+        }
+    }
+    if (!_safe){
+        [self makingCopies];
+    }
+}
+
+- (void)makingCopies {
+    _progress = KBMakeProgress(0, _currentFileSize, 0, _toPath);
     copyfile_state_t copyfileState = copyfile_state_alloc();
-    
     CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
-    off_t fromSize = _currentFileSize;
+    off_t fromSize = _initialFileSize;
+    if (fromSize > availableSpace) {
+        InfoLog(@"There isnt enough free space available to continue with this copy. %@ is required and %@ is available.", FANCY_BYTES(fromSize), FANCY_BYTES(availableSpace));
+        [self fail];
+        return;
+    }
     CGFloat spaceAfter = availableSpace - fromSize; //the amount of space left after the copy is complete
     if (fileExists([_toPath UTF8String]) && !is_dir([_toPath UTF8String]) && !self.force) {
         VerboseLog(@"%@ not overwritten", _toPath);
