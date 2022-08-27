@@ -9,12 +9,11 @@
 #include <sys/types.h>
 @implementation NSFileManager(Util)
 
-long long do_ls(const char *name, int returnType) {
+long long do_ls(const char *name) {
     DIR *dir_ptr;
     struct dirent *direntp;
     struct stat info;
     long long total = 0;
-    int fileCount = 0;
     if (stat(name, &info)) {
         fprintf(stderr, "ls01: cannot stat %s\n", name);
         return 0;
@@ -25,37 +24,27 @@ long long do_ls(const char *name, int returnType) {
         } else {
             while ((direntp = readdir(dir_ptr)) != NULL) {
                 char *pathname;
-
+                
                 /* ignore current and parent directories */
                 if (!strcmp(direntp->d_name, ".") || !strcmp(direntp->d_name, ".."))
                     continue;
-
+                
                 pathname = malloc(strlen(name) + 1 + strlen(direntp->d_name) + 1);
                 if (pathname == NULL) {
                     fprintf(stderr, "ls01: cannot allocated memory\n");
                     exit(1);
                 }
                 sprintf(pathname, "%s/%s", name, direntp->d_name);
-                if (returnType == 0) {
-                    total += do_ls(pathname, returnType);
-                } else if (returnType == 1) {
-                    fileCount+= do_ls(pathname, returnType);
-                }
+                total += do_ls(pathname);
                 free(pathname);
             }
             closedir(dir_ptr);
         }
     } else {
         total = info.st_size;
-        fileCount++;
     }
     //printf("file count: %i\n", fileCount);
     //printf("%10lld  %s\n", total, name);
-    if (returnType == 0) {
-        return total;
-    } else if (returnType == 1){
-        return fileCount;
-    }
     return total;
 }
 
@@ -105,19 +94,18 @@ long long do_ls(const char *name, int returnType) {
     }
 }
 
-
-
 + (NSUInteger)sizeForFolderAtPath:(NSString *)source {
-    return do_ls([source UTF8String], 0);
+    return do_ls([source UTF8String]);
 }
-
-+ (NSUInteger)countForFolderAtPath:(NSString *)source {
-    return do_ls([source UTF8String], 1);
-}
-
 
 + (CGFloat)availableSpaceForPath:(NSString *)source {
-    return [[[[NSFileManager defaultManager] attributesOfFileSystemForPath:source error:nil]objectForKey:NSFileSystemFreeSize] floatValue];
+    NSError *error = nil;
+    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfFileSystemForPath:source error:&error];
+    if (error) {
+        //DLog(@"error: %@", error);
+        attrs = [[NSFileManager defaultManager] attributesOfFileSystemForPath:@"." error:&error];
+    }
+    return [[attrs objectForKey:NSFileSystemFreeSize] floatValue];
 }
 
 @end

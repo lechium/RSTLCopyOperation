@@ -51,19 +51,19 @@ static struct option longopts[] = {
 
 @end
 
-static inline int barWidth(off_t currentValue, off_t totalValue, NSInteger remaining, int width, NSInteger screenWidth, const char *fileName) {
-    float ratio = currentValue/(float)totalValue;
+static inline int barWidth(KBProgress *progress, int width, NSInteger screenWidth) {
+    float ratio = progress.elapsedTime/(float)progress.totalTime;
     int   elapsed     = ratio * width;
     int remain = width - elapsed;
     NSString *rem = @"";
     NSString *det = @"";
     NSInteger percentSize = 11; // %XX [
     NSInteger nameBrackets = 2; // <>
-    NSInteger filenameLength = [NSString stringWithUTF8String:fileName].length;
+    NSInteger filenameLength = [progress processingFile].length;
     NSInteger stringLength = remain + percentSize + elapsed + nameBrackets + filenameLength;
-    if (remaining != 0) { //@"[00:00:00]"
-        rem = [[NSString stringWithFormat:@"%lu",remaining] TIMEFormat];
-        det = BYTE_PROGRESS(currentValue, totalValue);
+    if (progress.calculatedRemainingTime != 0) { //@"[00:00:00]"
+        rem = [[NSString stringWithFormat:@"%f",progress.calculatedRemainingTime] TIMEFormat];
+        det = BYTE_PROGRESS(progress.elapsedTime, progress.totalTime);
         stringLength+= rem.length; //should always be 10
         stringLength+= det.length;
     }
@@ -78,16 +78,22 @@ static inline int barWidth(off_t currentValue, off_t totalValue, NSInteger remai
 }
 
 // A nice loading bar. Credits: classdump-dyld
-static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remaining, int width, NSInteger screenWidth, const char *fileName) {
+
+static inline void loadBar(KBProgress *progress, int width, NSInteger screenwidth) {
     // Calculuate the ratio of complete-to-incomplete.
     if (quiet) return;
-    float ratio = currentValue/(float)totalValue;
+    float ratio = progress.elapsedTime/(float)progress.totalTime;
+    //float ratio = currentValue/(float)totalValue;
     int   elapsed     = ratio * width;
     NSString *rem = @"";
     NSString *det = @"";
-    if (remaining != 0) { //@"[00:00:00]"
-        rem = [[NSString stringWithFormat:@"%lu",remaining] TIMEFormat];
-        det = BYTE_PROGRESS(currentValue, totalValue);
+    NSString *fc = @"";
+    if (progress.calculatedRemainingTime != 0) { //@"[00:00:00]"
+        rem = [[NSString stringWithFormat:@"%f",progress.calculatedRemainingTime] TIMEFormat];
+        det = BYTE_PROGRESS(progress.elapsedTime, progress.totalTime);
+        if (progress.totalCount > 1){
+            fc = [NSString stringWithFormat:@"%lu/%lu", progress.processedCount, progress.totalCount];
+        }
     }
     
     // Show the percentage complete.
@@ -104,7 +110,7 @@ static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remai
     
     // ANSI Control codes to go back to the
     // previous line and clear it.
-    printf("] %s %s <%s> \n\033[F\033[J",[rem UTF8String], [det UTF8String], fileName);
+    printf("] %s %s %s <%s> \n\033[F\033[J",[rem UTF8String], [det UTF8String], [fc UTF8String], [[progress processingFile] UTF8String]);
 }
 
 void usage() {
@@ -149,10 +155,6 @@ int main(int argc, char * argv[]) {
     if (argc == 2){
         NSString *fromPath = [NSString stringWithUTF8String:argv[0]];
         NSString *toPath = [NSString stringWithUTF8String:argv[1]];
-        /*
-        if ([toPath isEqualToString:@"."]) {
-            toPath = [fromPath lastPathComponent];
-        } */
         RSTLCopyOperation *copyOperation = [[RSTLCopyOperation alloc] initWithInputFile:fromPath toPath:toPath];
         copyOperation.force = force;
         copyOperation.safe = safe;
@@ -166,11 +168,14 @@ int main(int argc, char * argv[]) {
                 barSize = 30;
             }
             if (calcBarWidth == 0){
-                calcBarWidth = barWidth(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, barSize, width, [[progress processingFile] UTF8String]);
+                calcBarWidth = barWidth(progress, barSize, width);
+                //calcBarWidth = barWidth(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, barSize, width, [[progress processingFile] UTF8String]);
                 //DLog(@"calcBarWidth: %lu", calcBarWidth);
-                loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
+                loadBar(progress, calcBarWidth, width);
+                //oadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
             } else {
-                loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
+                loadBar(progress, calcBarWidth, width);
+                //loadBar(progress.elapsedTime, progress.totalTime, progress.calculatedRemainingTime, calcBarWidth, width, [[progress processingFile] UTF8String]);//[[toPath lastPathComponent] UTF8String]);
             }
            
             

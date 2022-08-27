@@ -54,6 +54,7 @@ off_t fsize(const char *filename) {
 @property NSUInteger currentFileSize;
 @property NSUInteger initialFileSize;
 @property NSInteger fileCount;
+@property NSInteger processedFiles;
 @property KBProgress *progress;
 
 @end
@@ -116,6 +117,9 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
                     //VerboseLog(@"File Start %s size: %@\n", fromPath, FANCY_BYTES(self.currentFileSize));
                     break;
                 case COPYFILE_FINISH:
+                    //VerboseLog(@"File Finish");
+                    self.processedFiles++;
+                    self.progress.processedCount = self.processedFiles;
                     //VerboseLog(@"File Finish");
                     break;
                 case COPYFILE_ERR:
@@ -238,6 +242,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     } else { //isnt dir
         _currentFileSize = fsize([_fromPath UTF8String]);
         _initialFileSize = _currentFileSize;
+        _fileCount = 1;
         if (self.safe) {
             [self makingCopies];
             return;
@@ -250,7 +255,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
 
 - (void)makingCopies {
     _progress = KBMakeProgress(0, _currentFileSize, 0, _toPath);
-    copyfile_state_t copyfileState = copyfile_state_alloc();
+    _progress.totalCount = _fileCount;
     CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
     off_t fromSize = _initialFileSize;
     if (fromSize > availableSpace) {
@@ -269,7 +274,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         [self fail];
         return;
     }
-    
+    copyfile_state_t copyfileState = copyfile_state_alloc();
     const char *fromPath = [self.fromPath fileSystemRepresentation];
     const char *toPath = [self.toPath fileSystemRepresentation];
     VerboseLog(@"\n%s size: %@", fromPath, FANCY_BYTES(_currentFileSize));
@@ -333,13 +338,9 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
 }
 
 + (void)logLevel:(NSInteger)level string:(NSString *)string {
-    if (level == 0 || [self isVerbose]){ //info level
+    if (level == 0 || [self isVerbose]){
         DLog(@"%@", string);
-    } else {
-        if ([self isVerbose]){
-            DLog(@"%@", string);
-        }
-    }
+    } 
 }
 
 + (void)logLevel:(NSInteger)level stringWithFormat:(NSString *)fmt, ... {
