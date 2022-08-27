@@ -109,7 +109,7 @@ static inline void loadBar(off_t currentValue, off_t totalValue, NSInteger remai
 
 void usage() {
     
-    printf("usage: %s -f [-vq] source_file target_file\n", [[[NSProcessInfo processInfo] processName] UTF8String]);
+    printf("usage: %s -f -s [-vq] source_file target_file\n", [[[NSProcessInfo processInfo] processName] UTF8String]);
     exit(0);
 }
 
