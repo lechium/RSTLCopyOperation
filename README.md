@@ -25,6 +25,12 @@
 
 We would love you for the contribution to **ncp**, check the ``LICENSE`` file for more info.
 
+## Future Plans
+
+- Make the necessary code into a framework or library and add it to cocoapods
+- Add any other feature disparities that exist in original **cp** and not in **ncp**
+- Add a cask to brew for easier installs
+
 ## Meta
 
 Kevin Bradley 
