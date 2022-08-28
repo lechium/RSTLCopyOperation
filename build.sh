@@ -2,7 +2,7 @@
 
 xcodebuild | xcpretty
 rm /usr/local/bin/ncp
-cp build/Release/Copy /usr/local/bin/ncp
+cp build/Release/ncp /usr/local/bin/ncp
 pd=$(/usr/bin/which pandoc)
 if [  -z $pd ]; then
     echo "pandoc is required to build the manpage. 'brew install pandoc'"

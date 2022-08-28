@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		327C370028BBC1D400482565 /* ncp.1 in Copy Files */ = {isa = PBXBuildFile; fileRef = 327C36FF28BBC1D200482565 /* ncp.1 */; };
 		3932910816CB6A6400123628 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3932910716CB6A6400123628 /* Foundation.framework */; };
 		3932910B16CB6A6400123628 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3932910A16CB6A6400123628 /* main.m */; };
-		3932910F16CB6A6400123628 /* Copy.1 in Copy Files */ = {isa = PBXBuildFile; fileRef = 3932910E16CB6A6400123628 /* Copy.1 */; };
 		3932911716CB741200123628 /* RSTLCopyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3932911616CB741200123628 /* RSTLCopyOperation.m */; };
 		4CD0C2FC28B7FB2500606E83 /* KBProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0C2FB28B7FB2500606E83 /* KBProgress.m */; };
 		4CD0C2FF28B8349600606E83 /* NSFileManager+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */; };
@@ -22,7 +22,7 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				3932910F16CB6A6400123628 /* Copy.1 in Copy Files */,
+				327C370028BBC1D400482565 /* ncp.1 in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 1;
@@ -32,11 +32,11 @@
 /* Begin PBXFileReference section */
 		327C36F828BB1C0100482565 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		327C36F928BB1C1C00482565 /* ncp.1.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ncp.1.md; sourceTree = "<group>"; };
-		3932910416CB6A6400123628 /* Copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Copy; sourceTree = BUILT_PRODUCTS_DIR; };
+		327C36FF28BBC1D200482565 /* ncp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ncp.1; sourceTree = "<group>"; };
+		3932910416CB6A6400123628 /* ncp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ncp; sourceTree = BUILT_PRODUCTS_DIR; };
 		3932910716CB6A6400123628 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3932910A16CB6A6400123628 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		3932910D16CB6A6400123628 /* Copy-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Copy-Prefix.pch"; sourceTree = "<group>"; };
-		3932910E16CB6A6400123628 /* Copy.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Copy.1; sourceTree = "<group>"; };
+		3932910D16CB6A6400123628 /* ncp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ncp-Prefix.pch"; sourceTree = "<group>"; };
 		3932911516CB741200123628 /* RSTLCopyOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSTLCopyOperation.h; sourceTree = "<group>"; };
 		3932911616CB741200123628 /* RSTLCopyOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSTLCopyOperation.m; sourceTree = "<group>"; };
 		4CD0C2FA28B7FB2500606E83 /* KBProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBProgress.h; sourceTree = "<group>"; };
@@ -62,7 +62,7 @@
 			children = (
 				327C36F928BB1C1C00482565 /* ncp.1.md */,
 				327C36F828BB1C0100482565 /* build.sh */,
-				3932910916CB6A6400123628 /* Copy */,
+				3932910916CB6A6400123628 /* ncp */,
 				3932910616CB6A6400123628 /* Frameworks */,
 				3932910516CB6A6400123628 /* Products */,
 			);
@@ -71,7 +71,7 @@
 		3932910516CB6A6400123628 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3932910416CB6A6400123628 /* Copy */,
+				3932910416CB6A6400123628 /* ncp */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,9 +84,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3932910916CB6A6400123628 /* Copy */ = {
+		3932910916CB6A6400123628 /* ncp */ = {
 			isa = PBXGroup;
 			children = (
+				327C36FF28BBC1D200482565 /* ncp.1 */,
 				4CD0C2FE28B8349600606E83 /* NSFileManager+Size.h */,
 				4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */,
 				3932910A16CB6A6400123628 /* main.m */,
@@ -94,16 +95,15 @@
 				4CD0C2FB28B7FB2500606E83 /* KBProgress.m */,
 				3932911516CB741200123628 /* RSTLCopyOperation.h */,
 				3932911616CB741200123628 /* RSTLCopyOperation.m */,
-				3932910E16CB6A6400123628 /* Copy.1 */,
 				3932910C16CB6A6400123628 /* Supporting Files */,
 			);
-			path = Copy;
+			path = ncp;
 			sourceTree = "<group>";
 		};
 		3932910C16CB6A6400123628 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				3932910D16CB6A6400123628 /* Copy-Prefix.pch */,
+				3932910D16CB6A6400123628 /* ncp-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -111,9 +111,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3932910316CB6A6400123628 /* Copy */ = {
+		3932910316CB6A6400123628 /* ncp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3932911216CB6A6400123628 /* Build configuration list for PBXNativeTarget "Copy" */;
+			buildConfigurationList = 3932911216CB6A6400123628 /* Build configuration list for PBXNativeTarget "ncp" */;
 			buildPhases = (
 				3932910016CB6A6400123628 /* Sources */,
 				3932910116CB6A6400123628 /* Frameworks */,
@@ -123,9 +123,9 @@
 			);
 			dependencies = (
 			);
-			name = Copy;
+			name = ncp;
 			productName = Copy;
-			productReference = 3932910416CB6A6400123628 /* Copy */;
+			productReference = 3932910416CB6A6400123628 /* ncp */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -137,7 +137,7 @@
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = RSTL;
 			};
-			buildConfigurationList = 393290FF16CB6A6400123628 /* Build configuration list for PBXProject "Copy" */;
+			buildConfigurationList = 393290FF16CB6A6400123628 /* Build configuration list for PBXProject "ncp" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -150,7 +150,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3932910316CB6A6400123628 /* Copy */,
+				3932910316CB6A6400123628 /* ncp */,
 			);
 		};
 /* End PBXProject section */
@@ -233,7 +233,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Copy/Copy-Prefix.pch";
+				GCC_PREFIX_HEADER = "$(TARGET_NAME)/ncp-Prefix.pch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -242,7 +242,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Copy/Copy-Prefix.pch";
+				GCC_PREFIX_HEADER = "$(TARGET_NAME)/ncp-Prefix.pch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -250,7 +250,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		393290FF16CB6A6400123628 /* Build configuration list for PBXProject "Copy" */ = {
+		393290FF16CB6A6400123628 /* Build configuration list for PBXProject "ncp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3932911016CB6A6400123628 /* Debug */,
@@ -259,7 +259,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3932911216CB6A6400123628 /* Build configuration list for PBXNativeTarget "Copy" */ = {
+		3932911216CB6A6400123628 /* Build configuration list for PBXNativeTarget "ncp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3932911316CB6A6400123628 /* Debug */,
