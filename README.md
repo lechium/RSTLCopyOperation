@@ -3,6 +3,7 @@
 
 ![Copy](screenshot.jpg "Copy")  <br/>
 ![Safe](screenshotsafety.png "Safe")  <br/>
+![man](manpage.png "manpage")  <br/>
 ## Features
 
 - [x] Copy files with descriptive progress
