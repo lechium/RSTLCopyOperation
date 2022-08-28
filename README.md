@@ -2,7 +2,7 @@
 **ncp** is meant to be a safe replacement for standard issue cp. By default it will give you a fancy progress bar keeping track of the current file copying. For singular file copying it will check available space before attempting to copy a file. In safe mode this safety measure will apply to copying folders as well. If the folder has a lot of files, this will slow down the initial copying process as we calculate the folder size. 
 
 ![Copy](screenshot.jpg "Copy")  <br/>
-![Safe](screenshot2.jpg "Safe")  <br/>
+![Safe](screenshot2.png "Safe")  <br/>
 ## Features
 
 - [x] Copy files with descriptive progress
