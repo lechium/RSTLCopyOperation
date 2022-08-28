@@ -30,6 +30,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		327C36F828BB1C0100482565 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		327C36F928BB1C1C00482565 /* ncp.1.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ncp.1.md; sourceTree = "<group>"; };
 		3932910416CB6A6400123628 /* Copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Copy; sourceTree = BUILT_PRODUCTS_DIR; };
 		3932910716CB6A6400123628 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3932910A16CB6A6400123628 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -58,6 +60,8 @@
 		393290FB16CB6A6400123628 = {
 			isa = PBXGroup;
 			children = (
+				327C36F928BB1C1C00482565 /* ncp.1.md */,
+				327C36F828BB1C0100482565 /* build.sh */,
 				3932910916CB6A6400123628 /* Copy */,
 				3932910616CB6A6400123628 /* Frameworks */,
 				3932910516CB6A6400123628 /* Products */,

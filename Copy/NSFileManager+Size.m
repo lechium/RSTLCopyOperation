@@ -9,6 +9,8 @@
 #include <sys/types.h>
 @implementation NSFileManager(Util)
 
+//https://stackoverflow.com/questions/50105231/how-do-i-recursively-go-through-folders-and-count-total-file-size
+
 long long do_ls(const char *name) {
     DIR *dir_ptr;
     struct dirent *direntp;
@@ -47,6 +49,8 @@ long long do_ls(const char *name) {
     //printf("%10lld  %s\n", total, name);
     return total;
 }
+
+//same code but with a completion block to offer a non-blocking solution
 
 + (void)ls:(const char *)name completion:(void(^)(NSInteger size, NSInteger count))block {
     DIR *dir_ptr;

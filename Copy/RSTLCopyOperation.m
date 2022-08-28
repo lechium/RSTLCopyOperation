@@ -231,7 +231,7 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
         NSDate *start = [NSDate date];
         [NSFileManager ls:[_fromPath UTF8String] completion:^(NSInteger size, NSInteger count) {
             NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:start];
-            DLog(@"Fetched folder size: %@ with file count: %lu in %f seconds", FANCY_BYTES(size), count, interval);
+            VerboseLog(@"Fetched folder size: %@ with file count: %lu in %f seconds", FANCY_BYTES(size), count, interval);
             _initialFileSize = size;
             _fileCount = count;
             if (self.safe) {

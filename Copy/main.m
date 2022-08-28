@@ -130,28 +130,21 @@ int main(int argc, char * argv[]) {
     BOOL safe = false;
     int flag;
     NSInteger width = [RSTLCopyOperation width];
-    NSString *myOpts = @"";
     while ((flag = getopt_long(argc, argv, OPTION_FLAGS, longopts, NULL)) != -1) {
         switch(flag) {
             case 'f':
                 force = true;
-                myOpts = [myOpts stringByAppendingString:@"f"];
                 break;
             case 'v':
                 verbose = true;
                 quiet = false;
-                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"q" withString:@""];
-                myOpts = [myOpts stringByAppendingString:@"v"];
                 break;
             case 'q':
                 quiet = true;
                 verbose = false;
-                myOpts = [myOpts stringByReplacingOccurrencesOfString:@"v" withString:@""];
-                myOpts = [myOpts stringByAppendingString:@"q"];
                 break;
             case 's':
                 safe = true;
-                myOpts = [myOpts stringByAppendingString:@"s"];
                 break;
         }
     }
