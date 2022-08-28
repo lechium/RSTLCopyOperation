@@ -28,9 +28,9 @@ Kevin Bradley
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-This started out as a fork of [RSTLCopyOperation](https://github.com/rustle/RSTLCopyOperation)
+I was looking for a way to copy files with progress and since `NSFileManager` is woefully equipped for this I searched around and stumbled over [RSTLCopyOperation](https://github.com/rustle/RSTLCopyOperation) and found it to be the perfect foundation to create a new & better 'cp'.
 
-[ncp](https://github.com/lechium/ncp)
+[https://github.com/lechium/ncp](https://github.com/lechium/ncp)
 
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: LICENSE
