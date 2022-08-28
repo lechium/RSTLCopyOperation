@@ -9,21 +9,22 @@
 /* Begin PBXBuildFile section */
 		3932910816CB6A6400123628 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3932910716CB6A6400123628 /* Foundation.framework */; };
 		3932910B16CB6A6400123628 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3932910A16CB6A6400123628 /* main.m */; };
-		3932910F16CB6A6400123628 /* Copy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3932910E16CB6A6400123628 /* Copy.1 */; };
+		3932910F16CB6A6400123628 /* Copy.1 in Copy Files */ = {isa = PBXBuildFile; fileRef = 3932910E16CB6A6400123628 /* Copy.1 */; };
 		3932911716CB741200123628 /* RSTLCopyOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3932911616CB741200123628 /* RSTLCopyOperation.m */; };
 		4CD0C2FC28B7FB2500606E83 /* KBProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0C2FB28B7FB2500606E83 /* KBProgress.m */; };
 		4CD0C2FF28B8349600606E83 /* NSFileManager+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		3932910216CB6A6400123628 /* CopyFiles */ = {
+		3932910216CB6A6400123628 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				3932910F16CB6A6400123628 /* Copy.1 in CopyFiles */,
+				3932910F16CB6A6400123628 /* Copy.1 in Copy Files */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -112,7 +113,7 @@
 			buildPhases = (
 				3932910016CB6A6400123628 /* Sources */,
 				3932910116CB6A6400123628 /* Frameworks */,
-				3932910216CB6A6400123628 /* CopyFiles */,
+				3932910216CB6A6400123628 /* Copy Files */,
 			);
 			buildRules = (
 			);
