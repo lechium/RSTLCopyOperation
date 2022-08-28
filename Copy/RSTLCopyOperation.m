@@ -259,7 +259,9 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     CGFloat availableSpace = [NSFileManager availableSpaceForPath:self.toPath];
     off_t fromSize = _initialFileSize;
     if (fromSize > availableSpace) {
-        InfoLog(@"There isnt enough free space available to continue with this copy. %@ is required and %@ is available.", FANCY_BYTES(fromSize), FANCY_BYTES(availableSpace));
+        system("tput bold");
+        InfoLog(@"\nThere isnt enough free space available to continue with this copy. %@ is required and %@ is available.\n\n", FANCY_BYTES(fromSize), FANCY_BYTES(availableSpace));
+        system("tput sgr0");
         [self fail];
         return;
     }
