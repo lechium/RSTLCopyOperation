@@ -17,5 +17,5 @@ if [ -d usr ]; then
     cp ncp.1.gz usr/local/share/man/man1/
     tar cp --gid 20 --uid 501 --lzma -P --exclude .DS_Store -f ncp.tar.xz usr
 fi
-mv ncp.1.gz /usr/local/share/man/man1/ 
+cp ncp.1.gz /usr/local/share/man/man1/ 
 
