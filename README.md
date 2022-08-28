@@ -28,9 +28,9 @@ Kevin Bradley
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-This started out as a fork of [https://github.com/rustle/RSTLCopyOperation](RSTLCopyOperation)
+This started out as a fork of [RSTLCopyOperation](https://github.com/rustle/RSTLCopyOperation)
 
-[https://github.com/lechium/ncp](ncp)
+[ncp](https://github.com/lechium/ncp)
 
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: LICENSE
