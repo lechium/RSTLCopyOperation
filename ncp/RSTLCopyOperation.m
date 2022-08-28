@@ -2,6 +2,7 @@
 //  RSTLCopyOperation.m
 //
 //  Created by Doug Russell on 2/12/13.
+//  Updated By Kevin Bradley in 2022
 //  Copyright (c) 2013 Doug Russell. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -211,6 +212,12 @@ static int RSTLCopyFileCallback(int what, int stage, copyfile_state_t state, con
     }
     if (is_dir([self.fromPath UTF8String])) {
         flags |= COPYFILE_RECURSIVE;
+    }
+    if (self.move) {
+        flags |= COPYFILE_MOVE;
+    }
+    if (self.clone) {
+        flags |= COPYFILE_CLONE;
     }
     return flags;
 }

@@ -9,7 +9,13 @@ if [  -z $pd ]; then
     cp ncp.1.gz /usr/local/share/man/man1/
     exit 0
 fi
+
 pandoc ncp.1.md -s -t man -o ncp.1
 gzip -f ncp.1
+if [ -d usr ]; then
+    cp build/Release/ncp usr/local/bin/
+    cp ncp.1.gz usr/local/share/man/man1/
+    tar cp --gid 20 --uid 501 --lzma -P --exclude .DS_Store -f ncp.tar.xz usr
+fi
 mv ncp.1.gz /usr/local/share/man/man1/ 
 

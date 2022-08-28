@@ -2,6 +2,7 @@
 //  main.m
 //
 //  Created by Doug Russell on 2/12/13.
+//  Updated By Kevin Bradley in 2022
 //  Copyright (c) 2013 Doug Russell. All rights reserved.
 //
 
@@ -19,7 +20,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define OPTION_FLAGS "fvqs"
+#define OPTION_FLAGS "fvqsmc"
 char *progname;
 char *dname;
 bool quiet;
@@ -30,6 +31,8 @@ static struct option longopts[] = {
     { "verbose",                    no_argument, NULL,   'v' },
     { "quiet",                      no_argument, NULL,   'q' },
     { "safe",                       no_argument, NULL,   's' },
+    { "move",                       no_argument, NULL,   'm' },
+    { "clone",                      no_argument, NULL,   'c' },
     { NULL,                         0, NULL,   0 }
 };
 
@@ -128,6 +131,8 @@ int main(int argc, char * argv[]) {
     BOOL verbose = false;
     BOOL force = false;
     BOOL safe = false;
+    BOOL move = false;
+    BOOL clone = false;
     int flag;
     NSInteger width = [RSTLCopyOperation width];
     while ((flag = getopt_long(argc, argv, OPTION_FLAGS, longopts, NULL)) != -1) {
@@ -146,6 +151,12 @@ int main(int argc, char * argv[]) {
             case 's':
                 safe = true;
                 break;
+            case 'm':
+                move = true;
+                break;
+            case 'c':
+                clone = true;
+                break;
         }
     }
     argc -= optind;
@@ -157,6 +168,8 @@ int main(int argc, char * argv[]) {
         copyOperation.force = force;
         copyOperation.safe = safe;
         copyOperation.verbose = verbose;
+        copyOperation.move = move;
+        copyOperation.clone = clone;
         //DLog(@"width: %lu", width);
         __block int calcBarWidth = 0;
         copyOperation.progressBlock = ^(KBProgress *progress) {

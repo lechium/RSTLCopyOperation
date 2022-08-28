@@ -33,6 +33,8 @@
 		327C36F828BB1C0100482565 /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		327C36F928BB1C1C00482565 /* ncp.1.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ncp.1.md; sourceTree = "<group>"; };
 		327C36FF28BBC1D200482565 /* ncp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ncp.1; sourceTree = "<group>"; };
+		327C370328BBE51A00482565 /* ncp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ncp-Prefix.pch"; sourceTree = "<group>"; };
+		327C370428BBE53A00482565 /* Defines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
 		3932910416CB6A6400123628 /* ncp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ncp; sourceTree = BUILT_PRODUCTS_DIR; };
 		3932910716CB6A6400123628 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3932910A16CB6A6400123628 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -87,6 +89,8 @@
 		3932910916CB6A6400123628 /* ncp */ = {
 			isa = PBXGroup;
 			children = (
+				327C370428BBE53A00482565 /* Defines.h */,
+				327C370328BBE51A00482565 /* ncp-Prefix.pch */,
 				327C36FF28BBC1D200482565 /* ncp.1 */,
 				4CD0C2FE28B8349600606E83 /* NSFileManager+Size.h */,
 				4CD0C2FD28B8349600606E83 /* NSFileManager+Size.m */,

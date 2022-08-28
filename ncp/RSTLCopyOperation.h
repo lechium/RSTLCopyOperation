@@ -2,6 +2,7 @@
 //  RSTLCopyOperation.h
 //
 //  Created by Doug Russell on 2/12/13.
+//  Updated By Kevin Bradley in 2022
 //  Copyright (c) 2013 Doug Russell. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,36 +22,20 @@
 #import "KBProgress.h"
 #include <libgen.h>
 
-// Disclaimer: This implementation is mostly just a tinker toy.
+// Disclaimer: This implementation was mostly just a tinker toy.
 // Copyfile is theoretically the replacement for the FS API that let you do copy operations and get progress callbacks,
 // (https://developer.apple.com/library/mac/documentation/Carbon/Reference/File_Manager/DeprecationAppendix/AppendixADeprecatedAPI.html#//apple_ref/c/func/FSCopyObjectAsync)
 // but it still has this in the header:
 
 /*
- * this is an API to faciliatate copying of files and their
- * associated metadata.  There are several open source projects that
- * need modifications to support preserving extended attributes and
- * acls and this API collapses several hundred lines of modifications
- * into one or two calls.
- *
- * This implementation is incomplete and the interface may change in a 
- * future release.
+ * This API facilitates the copying of files and their associated
+ * metadata.  There are several open source projects that need
+ * modifications to support preserving extended attributes and ACLs
+ * and this API collapses several hundred lines of modifications into
+ * one or two calls.
  */
 
-// and personally I think that any API with that in the header
-// I wouldn't use in any real software.
-
-#define __SHORT_FILE__ basename(__FILE__)
-#define ALog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__])
-#define DLog(format, ...) ALog(@"%@", [NSString stringWithFormat:format, ## __VA_ARGS__])
-#define LineLog(format, ...) ALog(@"[%s:%i] %@", __SHORT_FILE__, __LINE__, [NSString stringWithFormat:format, ## __VA_ARGS__])
-#define RSTLog(L, format, ...) [RSTLCopyOperation logLevel:L string:[NSString stringWithFormat:format, ## __VA_ARGS__]]
-#define VerboseLog(format, ...)RSTLog(1,format, ## __VA_ARGS__)
-#define InfoLog(format, ...)RSTLog(0,format, ## __VA_ARGS__)
-#define LOG_SELF        ALog(@"[Copy] %@ %@", self, NSStringFromSelector(_cmd))
-#define FANCY_BYTES(B) [NSByteCountFormatter stringFromByteCount:B countStyle:NSByteCountFormatterCountStyleFile]
-#define BYTE_PROGRESS(E,T) [NSString stringWithFormat:@"[%@/%@]",FANCY_BYTES(E), FANCY_BYTES(T)]
-
+// The header has been updated as such - I think its much safer now to use these API's
 
 typedef NS_ENUM(int8_t, RSTLCopyState) {
     RSTLCopyNotStarted,
@@ -67,6 +52,8 @@ typedef NS_ENUM(int8_t, RSTLCopyState) {
 @property BOOL force;
 @property BOOL quiet;
 @property BOOL safe;
+@property BOOL move;
+@property BOOL clone;
 @property (copy, nonatomic, readonly) NSString *fromPath;
 @property (copy, nonatomic, readonly) NSString *toPath;
 @property (nonatomic, copy) void (^progressBlock)(KBProgress *progress);

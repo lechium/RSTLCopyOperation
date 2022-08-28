@@ -7,7 +7,7 @@
 ncp -- copy files with progress
 
 # SYNOPSIS
-**ncp** **-f** **-s** [**-vq**] source_file target_file\
+**ncp** **-f** **-s** **-m** **-c** [**-vq**] source_file target_file\
 
 # DESCRIPTION
 
@@ -20,6 +20,12 @@ ncp -- copy files with progress
 
 **-s**, **--safe**
 : When copying directories check to make sure there is sufficient space in the target directory before starting to copy.
+
+**-m**, **--move**
+: Move the file(s)/folder(s) instead of copying.
+
+**-c**, **--clone**
+: Copy files using clonefile(2).
 
 **-v**, **--verbose**
 : Cause **ncp** to be verbose. showing files as they are copied.
