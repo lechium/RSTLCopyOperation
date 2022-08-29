@@ -16,6 +16,9 @@
 
 ## Installation
 
+#### Homebrew
+`brew install lechium/nitotv/ncp`
+
 #### Manually
 
 1. Change into the **ncp** folder
