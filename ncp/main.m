@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RSTLCopyOperation.h"
+#import "NSFileManager+Size.h"
 #ifdef __APPLE__
 #include <sys/syslimits.h>
 #endif
@@ -20,7 +21,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define OPTION_FLAGS "fvqsmc"
+#define OPTION_FLAGS "fvqsmcd:"
 char *progname;
 char *dname;
 bool quiet;
@@ -33,6 +34,7 @@ static struct option longopts[] = {
     { "safe",                       no_argument, NULL,   's' },
     { "move",                       no_argument, NULL,   'm' },
     { "clone",                      no_argument, NULL,   'c' },
+    { "directory-size",             required_argument, NULL, 'd'},
     { NULL,                         0, NULL,   0 }
 };
 
@@ -133,10 +135,14 @@ int main(int argc, char * argv[]) {
     BOOL safe = false;
     BOOL move = false;
     BOOL clone = false;
+    NSString *dSizeFolder = nil;
     int flag;
     NSInteger width = [RSTLCopyOperation width];
     while ((flag = getopt_long(argc, argv, OPTION_FLAGS, longopts, NULL)) != -1) {
         switch(flag) {
+            case 'd':
+                dSizeFolder = [NSString stringWithUTF8String:optarg];
+                break;
             case 'f':
                 force = true;
                 break;
@@ -161,6 +167,11 @@ int main(int argc, char * argv[]) {
     }
     argc -= optind;
     argv += optind;
+    if (dSizeFolder) {
+        NSString *output = FANCY_BYTES([NSFileManager sizeForFolderAtPath:dSizeFolder]);
+        DLog(@"%@: %@", dSizeFolder, output);
+        return 0;
+    }
     if (argc == 2){
         NSString *fromPath = [NSString stringWithUTF8String:argv[0]];
         NSString *toPath = [NSString stringWithUTF8String:argv[1]];
