@@ -70,6 +70,9 @@ off_t fsize(const char *filename) {
         if (!is_dir([fromPath UTF8String]) && [self.toPath isEqualToString:@"."]){
             _toPath = [_fromPath lastPathComponent];
         }
+        if (!is_dir([fromPath UTF8String]) && is_dir([self.toPath UTF8String])) {
+            _toPath = [self.toPath stringByAppendingPathComponent:fromPath.lastPathComponent];
+        }
         //DLog(@"_currentFileSize: %lu", (unsigned long)_currentFileSize);
         
     }

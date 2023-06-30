@@ -73,7 +73,7 @@ static inline int barWidth(KBProgress *progress, int width, NSInteger screenWidt
         stringLength+= rem.length; //should always be 10
         stringLength+= det.length;
         if (progress.totalCount > 1){
-            fc = [NSString stringWithFormat:@"%lu/%lu", progress.processedCount, progress.totalCount];
+            fc = [NSString stringWithFormat:@"%lu/%lu", progress.processedCount+1, progress.totalCount];
             stringLength+= fc.length;
         }
     }
